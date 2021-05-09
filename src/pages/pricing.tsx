@@ -3,14 +3,15 @@ import {
   Flex,
   Heading,
   useColorModeValue,
-  Text,
   chakra,
   Box,
   Button,
-  Spacer
+  Image,
+  Icon
 } from '@chakra-ui/react'
 
 import { NextPage } from 'next'
+import NextLink from 'next/link'
 import { LayoutContainer } from '../components/Layout'
 import {
   PricingButton,
@@ -20,23 +21,24 @@ import {
   PricingPrice
 } from '../components/Pricing'
 import { TextMuted } from '../components/TextMuted'
+import { FaAngleRight } from 'react-icons/fa'
 
-const PricingTitle = () => (
+const PricingTitle: React.FC = () => (
   <Box textAlign="center" my={16}>
-    <Heading size="2xl">Membership Plans</Heading>
+    <Heading size="4xl">Membership Plans</Heading>
     <TextMuted mt={4} fontSize="2xl">
       Learn to build and scale applications.
     </TextMuted>
   </Box>
 )
 
-const PricingMonthly = () => (
-  <PricingCard colorScheme="green">
+const PricingMonthly: React.FC = () => (
+  <PricingCard>
     <PricingHeading>Monthly Membership</PricingHeading>
     <PricingPrice price={20} term="month" />
     <PricingFeatures
       features={[
-        'Premium to videos and courses',
+        'Premium videos and courses',
         'Private Discord channel',
         'Course completion certificates'
       ]}
@@ -45,8 +47,8 @@ const PricingMonthly = () => (
   </PricingCard>
 )
 
-const PricingAnnually = () => (
-  <PricingCard isPopular>
+const PricingAnnually: React.FC = () => (
+  <PricingCard isPopular colorScheme="green">
     <PricingHeading>Annual Membership</PricingHeading>
     <PricingPrice price={168} term="year" subtitle="$14 / month" />
     <PricingFeatures
@@ -57,7 +59,7 @@ const PricingAnnually = () => (
           <chakra.span
             fontSize="lg"
             fontWeight="bold"
-            color={useColorModeValue('blue.400', 'blue.300')}
+            color={useColorModeValue('green.400', 'green.300')}
           >
             Save 30%
           </chakra.span>{' '}
@@ -69,7 +71,7 @@ const PricingAnnually = () => (
   </PricingCard>
 )
 
-const PricingLifetime = () => (
+const PricingLifetime: React.FC = () => (
   <PricingCard colorScheme="purple">
     <PricingHeading>Lifetime Membership</PricingHeading>
     <PricingPrice price={400} />
@@ -84,27 +86,6 @@ const PricingLifetime = () => (
   </PricingCard>
 )
 
-const FreeBanner = () => (
-  <Box>
-    <TextMuted fontWeight="semibold">Don't want to pay?</TextMuted>
-    <Flex>
-      <Box>
-        <Heading letterSpacing="wide">Start learning for free...</Heading>
-        <Text fontWeight="semibold" fontSize="xl">
-          over 45 videos available
-        </Text>
-      </Box>
-      <Spacer />
-      <Button size="lg" variant="outline" mr="2">
-        Videos
-      </Button>
-      <Button size="lg" colorScheme="green">
-        Sign up
-      </Button>
-    </Flex>
-  </Box>
-)
-
 const Pricing: NextPage = () => (
   <LayoutContainer>
     <PricingTitle />
@@ -115,7 +96,89 @@ const Pricing: NextPage = () => (
       <PricingLifetime />
     </Flex>
 
-    <FreeBanner />
+    <Box as="section" marginY={24}>
+      <Flex alignItems="center">
+        <Image src="/streaming.svg" w={400} m={5} />
+        <Box m={6}>
+          <Heading as="h3" fontSize="6xl" mb={2} lineHeight={1} m={2}>
+            Unlimited access to all courses.
+          </Heading>
+          <TextMuted fontSize="lg" fontWeight="bold" m={2}>
+            Whether you’re a beginner or experienced developer, our
+            comprehensive courses will help you gain the practical skills
+            required as a software developer.
+          </TextMuted>
+
+          <NextLink href="/courses">
+            <Button size="lg" colorScheme="green" m={2}>
+              View All Courses <Icon ml={3} as={FaAngleRight} />
+            </Button>
+          </NextLink>
+        </Box>
+      </Flex>
+    </Box>
+
+    <Box as="section" marginY={24}>
+      <Flex alignItems="center">
+        <Box m={6} textAlign="right">
+          <Heading as="h3" fontSize="6xl" mb={2} lineHeight={1} m={2}>
+            Learn with other developers.
+          </Heading>
+          <TextMuted fontSize="lg" fontWeight="bold" m={2}>
+            Whether you’re a beginner or experienced developer, our
+            comprehensive courses will help you gain the practical skills
+            required as a software developer.
+          </TextMuted>
+
+          <NextLink href="/discord">
+            <Button size="lg" colorScheme="purple" m={2}>
+              Join Discord <Icon ml={3} as={FaAngleRight} />
+            </Button>
+          </NextLink>
+        </Box>
+
+        <Image src="/network.svg" w={400} m={5} />
+      </Flex>
+    </Box>
+
+    <Box as="section" marginY={24}>
+      <Flex alignItems="center">
+        <Image src="/download.svg" w={400} m={5} />
+        <Box m={6}>
+          <Heading as="h3" fontSize="6xl" mb={2} lineHeight={1} m={2}>
+            Download content for offline learning.
+          </Heading>
+          <TextMuted fontSize="lg" fontWeight="bold" m={2}>
+            Whether you’re a beginner or experienced developer, our
+            comprehensive courses will help you gain the practical skills
+            required as a software developer.
+          </TextMuted>
+
+          <NextLink href="/pricing">
+            <Button size="lg" colorScheme="blue" m={2}>
+              Become a member <Icon ml={3} as={FaAngleRight} />
+            </Button>
+          </NextLink>
+        </Box>
+      </Flex>
+
+      {/* <Box as="section" marginY={48}>
+        <Heading as="h2" size="2xl" textAlign="center" mb={16}>
+          See what others have to say
+        </Heading>
+      </Box> */}
+
+      <Box as="section" marginY={48}>
+        <Heading as="h2" size="2xl" textAlign="center" mb={16}>
+          Become a member!
+        </Heading>
+        <Flex alignItems="center" position="relative" mb={16}>
+          <PricingMonthly />
+          <PricingAnnually />
+          <PricingLifetime />
+        </Flex>
+      </Box>
+    </Box>
   </LayoutContainer>
 )
 

@@ -7,7 +7,8 @@ import {
   Image,
   Tag,
   TagProps,
-  Text
+  Text,
+  useColorModeValue
 } from '@chakra-ui/react'
 import React from 'react'
 import NextLink from 'next/link'
@@ -98,7 +99,12 @@ export const VContentCard: React.FC<ContentCardProps> = props => {
     ...rest
   } = props
   return (
-    <Box rounded="md" bgColor="gray.700" boxShadow="md" {...rest}>
+    <Box
+      rounded="md"
+      bgColor={useColorModeValue('white', 'gray.700')}
+      boxShadow="md"
+      {...rest}
+    >
       <Image
         src={thumbnail}
         w="full"

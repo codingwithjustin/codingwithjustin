@@ -1,4 +1,4 @@
-import { Flex, FlexProps } from '@chakra-ui/react'
+import { Flex, FlexProps, useColorModeValue } from '@chakra-ui/react'
 import React from 'react'
 
 export const ContentCarousel: React.FC<FlexProps> = props => {
@@ -11,7 +11,10 @@ export const ContentCarousel: React.FC<FlexProps> = props => {
           height: 10
         },
         '&::-webkit-scrollbar-thumb': {
-          background: 'var(--chakra-colors-gray-600)',
+          background: useColorModeValue(
+            'var(--chakra-colors-gray-200)',
+            'var(--chakra-colors-gray-600)'
+          ),
           borderRadius: 'var(--chakra-radii-lg)'
         }
       }}

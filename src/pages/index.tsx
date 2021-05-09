@@ -11,15 +11,13 @@ import {
   Button,
   Flex,
   Icon,
-  Avatar,
   IconButton,
   Image
 } from '@chakra-ui/react'
-
+import NextLink from 'next/link'
 import { LayoutContainer } from '../components/Layout'
 import { SearchInput } from '../components/SearchInput'
-import { DevelopmentGraphic, ProgressGraphic } from '../components/LogicGraphic'
-import { Membership } from '../components/Banners'
+import { DevelopmentGraphic, ProgressGraphic } from '../components/Graphics'
 import {
   FcComments,
   FcCommandLine,
@@ -27,18 +25,15 @@ import {
   FcApproval,
   FcDownload,
   FcInfo,
-  FcOrgUnit,
   FcCollaboration,
   FcBusinessman,
   FcTemplate
 } from 'react-icons/fc'
-import { YouTubeVideo } from '../components/Youtube'
 import {
   FaAngleRight,
-  FaCaretRight,
-  FaCentercode,
+  FaDiscord,
   FaGithub,
-  FaQuoteLeft,
+  FaLinkedin,
   FaTwitter,
   FaYoutube
 } from 'react-icons/fa'
@@ -93,9 +88,17 @@ const Hero: React.FC = () => {
             as="a"
             href="#"
             variant="ghost"
-            aria-label="GitHub"
+            aria-label="Twitter"
             color="gray.500"
             icon={<FaTwitter fontSize="20px" />}
+          />
+          <IconButton
+            as="a"
+            href="#"
+            variant="ghost"
+            aria-label="Discord"
+            color="blue.500"
+            icon={<FaDiscord fontSize="20px" />}
           />
         </Box>
       </Box>
@@ -132,7 +135,7 @@ const Index: NextPage = () => {
     <LayoutContainer maxWidth="6xl">
       <Hero />
 
-      <Box as="section" mt={20}>
+      <Box as="section" marginY={28}>
         <SimpleGrid columns={3} spacingX={10}>
           <Feature title="Discord Community" icon={<FcComments />}>
             We have a discord channel where you can chat and learn with others.
@@ -148,8 +151,8 @@ const Index: NextPage = () => {
         </SimpleGrid>
       </Box>
 
-      <Box as="section" marginY={20}>
-        <Box mb={5}>
+      <Box as="section" marginY={28}>
+        <Box mb={5} ml={3}>
           <Heading as="h2" mb={2}>
             Get started learning for free.
           </Heading>
@@ -166,7 +169,7 @@ const Index: NextPage = () => {
           <Box>
             <Heading as="h3" fontSize="6xl" mb={2} lineHeight={1} m={2}>
               Become a{' '}
-              <Text as="span" color="blue.300">
+              <Text as="span" color={useColorModeValue('blue.600', 'blue.300')}>
                 member
               </Text>
               !
@@ -174,49 +177,74 @@ const Index: NextPage = () => {
             <TextMuted fontSize="lg" fontWeight="bold" m={2}>
               Gain access to premium content.
             </TextMuted>
-            <Button size="lg" colorScheme="blue" m={2}>
-              Get Started Now <Icon ml={3} as={FaAngleRight} />
-            </Button>
+            <NextLink href="/pricing">
+              <Button size="lg" colorScheme="blue" m={2}>
+                Membership plans <Icon ml={3} as={FaAngleRight} />
+              </Button>
+            </NextLink>
           </Box>
           <DevelopmentGraphic position="absolute" right={0} w={550} m={3} />
         </Flex>
 
         <SimpleGrid columns={3} rows={2} spacing={10} marginY={40}>
           <Feature title="Learn to Code" icon={<FcInfo />}>
-            We have a discord channel where you can chat and learn with others.
+            Learn from high quality and engaging videos.
           </Feature>
           <Feature title="Get hired" icon={<FcBusinessman />}>
-            Code written in videos are free and accessible on Github.
+            Gain the knowledge, confidence, experience you need.
           </Feature>
           <Feature title="Add to your portfolio" icon={<FcTemplate />}>
             Learn to build complex, professional, real-world projects.
           </Feature>
 
           <Feature title="Private Discord Channel" icon={<FcCollaboration />}>
-            Learn to build complex, professional, real-world projects.
+            Join a private discord channel to learn with others.
           </Feature>
           <Feature title="Access to all future courses" icon={<FcApproval />}>
-            Learn to build complex, professional, real-world projects.
+            Access updates and future videos as we release them.
           </Feature>
           <Feature title="Download for offline learning" icon={<FcDownload />}>
-            Learn to build complex, professional, real-world projects.
+            Learn anywhere, even offline.
           </Feature>
         </SimpleGrid>
       </Box>
 
       <Box as="section" marginY={48}>
         <Flex alignItems="center">
-          <Image rounded="full" src="/headshot.png" w={450} />
-          <Box fontSize="xl" ml={10} mt={-4}>
+          <Box>
+            <Image rounded="full" src="/headshot.png" w={450} />
+            <Center mt={2}>
+              <IconButton
+                as="a"
+                href="#"
+                variant="ghost"
+                aria-label="Twitter"
+                icon={<FaTwitter fontSize="20px" />}
+              />
+              <IconButton
+                as="a"
+                href="#"
+                variant="ghost"
+                aria-label="GitHub"
+                icon={<FaGithub fontSize="20px" />}
+              />
+              <IconButton
+                as="a"
+                href="#"
+                variant="ghost"
+                aria-label="Linkedin"
+                icon={<FaLinkedin fontSize="20px" />}
+              />
+            </Center>
+          </Box>
+          <Box fontSize="xl" ml={10}>
             <Heading as="h4" fontSize="5xl" mt={2}>
               Hi there, I'm Justin Brooks.
             </Heading>
-            <Text mt={1}>Hi there, I'm Justin Brooks.</Text>
             <Text>
-              By joining the Zero To Mastery Academy and putting in the work,
-              you’ll have the opportunity to take control of your life, work in
-              an exciting industry with infinite possibilities and live the life
-              you want.
+              My goal is to make learning software engaging, easy and quick.
+              Content I create is short and to the point. If you enjoy my work,
+              consider becoming a member and gaining access to premium content.
             </Text>
           </Box>
         </Flex>

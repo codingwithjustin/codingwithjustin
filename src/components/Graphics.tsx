@@ -191,7 +191,7 @@ export const DevelopmentGraphic: React.FC<ChakraProps> = props => {
     'var(--chakra-colors-gray-700)'
   )
   const arm = useColorModeValue(
-    'var(--chakra-colors-gray-200)',
+    'var(--chakra-colors-gray-500)',
     'var(--chakra-colors-gray-200)'
   )
 
@@ -202,11 +202,11 @@ export const DevelopmentGraphic: React.FC<ChakraProps> = props => {
 
   // const cloths = '#2f2e41'
   const cloths = useColorModeValue(
-    'var(--chakra-colors-gray-300)',
+    'var(--chakra-colors-gray-800)',
     'var(--chakra-colors-gray-900)'
   )
   const cloths2 = useColorModeValue(
-    'var(--chakra-colors-gray-300)',
+    'var(--chakra-colors-gray-700)',
     'var(--chakra-colors-gray-700)'
   )
 
