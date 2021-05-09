@@ -22,7 +22,11 @@ import {
 } from '../components/Pricing'
 import { TextMuted } from '../components/TextMuted'
 import { FaAngleRight } from 'react-icons/fa'
-import { SteamingGraphic } from '../components/Graphics'
+import {
+  DownloadGraphic,
+  NetworkGraphic,
+  SteamingGraphic
+} from '../components/Graphics'
 
 const PricingTitle: React.FC = () => (
   <Box textAlign="center" my={16}>
@@ -146,13 +150,13 @@ const Pricing: NextPage = () => (
           </NextLink>
         </Box>
 
-        <Image src="/network.svg" w={400} m={5} />
+        <NetworkGraphic w={425} m={5} flexShrink={0} />
       </Flex>
     </Box>
 
     <Box as="section" marginY={24}>
       <Flex alignItems="center">
-        <Image src="/download.svg" w={400} m={5} />
+        <DownloadGraphic w={400} m={5} flexShrink={0} />
         <Box m={12}>
           <Heading as="h3" fontSize="6xl" mb={2} lineHeight={1} m={2}>
             <chakra.span color={useColorModeValue('blue.600', 'blue.300')}>

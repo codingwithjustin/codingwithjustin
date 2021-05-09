@@ -1,6 +1,4 @@
 import {
-  Box,
-  BoxProps,
   useColorModeValue,
   Text,
   HeadingProps,
@@ -8,7 +6,6 @@ import {
   TextProps,
   ButtonProps,
   Button,
-  ModalProps,
   useDisclosure,
   Modal,
   ModalOverlay,
