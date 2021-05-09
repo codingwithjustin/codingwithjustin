@@ -9,6 +9,7 @@ import {
 } from '@chakra-ui/react'
 import NextLink from 'next/link'
 import React from 'react'
+import { SignInButton } from './Auth'
 import { DarkModeSwitch } from './DarkModeSwitch'
 import { SearchInput } from './SearchInput'
 
@@ -26,10 +27,16 @@ export const NavBar: React.FC<FlexProps> = props => {
         <NextLink href="/">Coding With Justin</NextLink>
       </Heading>
       <Box ml={5}>
-        <Button variant="ghost">Videos</Button>
+        <NextLink href="/videos" passHref>
+          <Button as="a" variant="ghost">
+            Videos
+          </Button>
+        </NextLink>
         <Button variant="ghost">Courses</Button>
-        <NextLink href="/pricing">
-          <Button variant="ghost">Pricing</Button>
+        <NextLink href="/pricing" passHref>
+          <Button as="a" variant="ghost">
+            Pricing
+          </Button>
         </NextLink>
       </Box>
       <Spacer />
@@ -38,9 +45,7 @@ export const NavBar: React.FC<FlexProps> = props => {
       </Box>
       <Box>
         <DarkModeSwitch mr={2} />
-
-        <Button variant="ghost">Sign In</Button>
-        <Button variant="ghost">Sign Up</Button>
+        <SignInButton mr={2} variant="outline" colorScheme="green" />
       </Box>
     </Flex>
   )

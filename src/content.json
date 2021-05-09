@@ -622,7 +622,7 @@
   {
     "publishedAt": "2021-01-04T14:00:22Z",
     "channelId": "UCro4e-xxAYrgwt5cOccnE0A",
-    "tags": ["vue", "chat"],
+    "tags": ["vue", "firebase", "realtime"],
     "title": "Building a Realtime Chat App with Vue 3 and Firebase in 7 minutes",
     "description": "Today we will be combining the power of Firebase and Vue 3 to build a real-time chat application. Most importantly we will be looking at using firebase with Vue ...",
     "thumbnails": {

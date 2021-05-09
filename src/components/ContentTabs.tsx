@@ -14,7 +14,8 @@ import {
   useColorModeValue
 } from '@chakra-ui/react'
 import React from 'react'
-import * as Content from '../content'
+import NextLink from 'next/link'
+import { ContentFilter } from '../content'
 
 import { VContentCard } from './ContentCard'
 import { ContentCarousel } from './ContentCarousel'
@@ -41,15 +42,20 @@ const Banner: React.FC<FlexProps & { button?: React.ReactElement }> = ({
   </Flex>
 )
 
-const BannerButton: React.FC<ButtonProps> = props => (
-  <Button
-    flexShrink={0}
-    size="sm"
-    variant="outline"
-    colorScheme="green"
-    ml={2}
-    {...props}
-  />
+const BannerButton: React.FC<ButtonProps & { href: string }> = ({
+  href,
+  ...props
+}) => (
+  <NextLink href={href}>
+    <Button
+      flexShrink={0}
+      size="sm"
+      variant="outline"
+      colorScheme="green"
+      ml={2}
+      {...props}
+    />
+  </NextLink>
 )
 
 const BannerHeader: React.FC<HeadingProps> = props => (
@@ -60,7 +66,7 @@ export const ContentTabs: React.FC = () => {
   return (
     <Tabs variant="unstyled">
       <TabList>
-        <StyledTab>Latest</StyledTab>
+        <StyledTab>Newest</StyledTab>
         <StyledTab>JavaScript</StyledTab>
         <StyledTab>Vue</StyledTab>
         <StyledTab>React</StyledTab>
@@ -73,19 +79,21 @@ export const ContentTabs: React.FC = () => {
               <BannerHeader>
                 Learn the last technologies to expand your career.
               </BannerHeader>
-              <BannerButton>Explore Latest</BannerButton>
+              <BannerButton href="/videos">Explore Newest</BannerButton>
             </Banner>
 
             <ContentCarousel pb={7} paddingX={5}>
-              {Content.contents.slice(0, 10).map(s => (
-                <VContentCard
-                  key={s.title}
-                  w={300}
-                  flexShrink={0}
-                  marginX={2}
-                  {...s}
-                />
-              ))}
+              {ContentFilter.content()
+                .first(10)
+                .map(s => (
+                  <VContentCard
+                    key={s.title}
+                    w={300}
+                    flexShrink={0}
+                    marginX={2}
+                    {...s}
+                  />
+                ))}
             </ContentCarousel>
           </TabPanel>
 
@@ -94,10 +102,14 @@ export const ContentTabs: React.FC = () => {
               <BannerHeader>
                 Grow your software development skills with JavaScript.
               </BannerHeader>
-              <BannerButton>Explore JavaScript</BannerButton>
+              <BannerButton href="/tag/javascript">
+                Explore JavaScript
+              </BannerButton>
             </Banner>
             <ContentCarousel pb={7} paddingX={5}>
-              {Content.hasTag('javascript')
+              {ContentFilter.content()
+                .hasTag('javascript')
+                .first(10)
                 .map(s => (
                   <VContentCard
                     key={s.title}
@@ -106,8 +118,7 @@ export const ContentTabs: React.FC = () => {
                     marginX={2}
                     {...s}
                   />
-                ))
-                .slice(0, 10)}
+                ))}
             </ContentCarousel>
           </TabPanel>
           <TabPanel p={0}>
@@ -115,10 +126,12 @@ export const ContentTabs: React.FC = () => {
               <BannerHeader>
                 Build websites and applications with Vue.
               </BannerHeader>
-              <BannerButton>Explore Vue</BannerButton>
+              <BannerButton href="/tag/vue">Explore Vue</BannerButton>
             </Banner>
             <ContentCarousel pb={7} paddingX={5}>
-              {Content.hasTag('vue')
+              {ContentFilter.content()
+                .hasTag('vue')
+                .first(10)
                 .map(s => (
                   <VContentCard
                     key={s.title}
@@ -127,8 +140,7 @@ export const ContentTabs: React.FC = () => {
                     marginX={2}
                     {...s}
                   />
-                ))
-                .slice(0, 10)}
+                ))}
             </ContentCarousel>
           </TabPanel>
           <TabPanel p={0}>
@@ -136,10 +148,12 @@ export const ContentTabs: React.FC = () => {
               <BannerHeader>
                 Build scalable applications with React.
               </BannerHeader>
-              <BannerButton>Explore React</BannerButton>
+              <BannerButton href="/tag/react">Explore React</BannerButton>
             </Banner>
             <ContentCarousel pb={7} paddingX={5}>
-              {Content.hasTag('react')
+              {ContentFilter.content()
+                .hasTag('react')
+                .first(10)
                 .map(s => (
                   <VContentCard
                     key={s.title}
@@ -148,8 +162,7 @@ export const ContentTabs: React.FC = () => {
                     marginX={2}
                     {...s}
                   />
-                ))
-                .slice(0, 10)}
+                ))}
             </ContentCarousel>
           </TabPanel>
         </TabPanels>

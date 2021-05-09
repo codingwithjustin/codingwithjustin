@@ -3,40 +3,18 @@ import {
   BoxProps,
   ButtonGroup,
   ButtonGroupProps,
-  IconButton,
   Stack,
   Text,
   TextProps
 } from '@chakra-ui/react'
 import React from 'react'
-import { FaGithub, FaLinkedin, FaTwitter, FaYoutube } from 'react-icons/fa'
+import { GitHubButton, TwitterButton, YoutubeButton } from './SocialMedia'
 
 export const SocialMediaLinks: React.FC<ButtonGroupProps> = props => (
   <ButtonGroup variant="ghost" color="gray.600" {...props}>
-    <IconButton
-      as="a"
-      href="#"
-      aria-label="LinkedIn"
-      icon={<FaLinkedin fontSize="20px" />}
-    />
-    <IconButton
-      as="a"
-      href="#"
-      aria-label="Youtube"
-      icon={<FaYoutube fontSize="20px" />}
-    />
-    <IconButton
-      as="a"
-      href="#"
-      aria-label="GitHub"
-      icon={<FaGithub fontSize="20px" />}
-    />
-    <IconButton
-      as="a"
-      href="#"
-      aria-label="Twitter"
-      icon={<FaTwitter fontSize="20px" />}
-    />
+    <GitHubButton />
+    <TwitterButton />
+    <YoutubeButton />
   </ButtonGroup>
 )
 

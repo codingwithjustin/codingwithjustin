@@ -22,6 +22,7 @@ import {
 } from '../components/Pricing'
 import { TextMuted } from '../components/TextMuted'
 import { FaAngleRight } from 'react-icons/fa'
+import { SteamingGraphic } from '../components/Graphics'
 
 const PricingTitle: React.FC = () => (
   <Box textAlign="center" my={16}>
@@ -98,10 +99,14 @@ const Pricing: NextPage = () => (
 
     <Box as="section" marginY={24}>
       <Flex alignItems="center">
-        <Image src="/streaming.svg" w={400} m={5} />
-        <Box m={6}>
+        <SteamingGraphic w={400} flexShrink={0} />
+        <Box m={12}>
           <Heading as="h3" fontSize="6xl" mb={2} lineHeight={1} m={2}>
-            Unlimited access to all courses.
+            Unlimited access to all{' '}
+            <chakra.span color={useColorModeValue('green.600', 'green.300')}>
+              courses
+            </chakra.span>
+            .
           </Heading>
           <TextMuted fontSize="lg" fontWeight="bold" m={2}>
             Whether you’re a beginner or experienced developer, our
@@ -111,7 +116,7 @@ const Pricing: NextPage = () => (
 
           <NextLink href="/courses">
             <Button size="lg" colorScheme="green" m={2}>
-              View All Courses <Icon ml={3} as={FaAngleRight} />
+              View Courses <Icon ml={3} as={FaAngleRight} />
             </Button>
           </NextLink>
         </Box>
@@ -120,9 +125,13 @@ const Pricing: NextPage = () => (
 
     <Box as="section" marginY={24}>
       <Flex alignItems="center">
-        <Box m={6} textAlign="right">
+        <Box m={12} textAlign="right">
           <Heading as="h3" fontSize="6xl" mb={2} lineHeight={1} m={2}>
-            Learn with other developers.
+            Learn with other{' '}
+            <chakra.span color={useColorModeValue('purple.600', 'purple.300')}>
+              developers
+            </chakra.span>
+            .
           </Heading>
           <TextMuted fontSize="lg" fontWeight="bold" m={2}>
             Whether you’re a beginner or experienced developer, our
@@ -144,9 +153,12 @@ const Pricing: NextPage = () => (
     <Box as="section" marginY={24}>
       <Flex alignItems="center">
         <Image src="/download.svg" w={400} m={5} />
-        <Box m={6}>
+        <Box m={12}>
           <Heading as="h3" fontSize="6xl" mb={2} lineHeight={1} m={2}>
-            Download content for offline learning.
+            <chakra.span color={useColorModeValue('blue.600', 'blue.300')}>
+              Download
+            </chakra.span>{' '}
+            content for offline learning.
           </Heading>
           <TextMuted fontSize="lg" fontWeight="bold" m={2}>
             Whether you’re a beginner or experienced developer, our

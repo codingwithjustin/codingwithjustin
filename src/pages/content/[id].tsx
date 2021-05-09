@@ -42,6 +42,7 @@ const Index = () => {
               <IconButton
                 as="a"
                 size="lg"
+                href="https://github.com/codingwithjustin"
                 fontSize="1.5em"
                 variant="ghost"
                 aria-label="GitHub"
@@ -50,6 +51,7 @@ const Index = () => {
               <IconButton
                 as="a"
                 size="lg"
+                href="https://www.youtube.com/channel/UCro4e-xxAYrgwt5cOccnE0A"
                 fontSize="1.5em"
                 variant="ghost"
                 colorScheme="red"
@@ -59,6 +61,7 @@ const Index = () => {
               <IconButton
                 as="a"
                 size="lg"
+                href="https://github.com/codingwithjustin"
                 fontSize="1.5em"
                 variant="ghost"
                 colorScheme="purple"
@@ -68,6 +71,7 @@ const Index = () => {
               <IconButton
                 as="a"
                 size="lg"
+                href="https://twitter.com/jsbroks"
                 fontSize="1.5em"
                 variant="ghost"
                 colorScheme="twitter"

@@ -11,8 +11,8 @@ import {
   Button,
   Flex,
   Icon,
-  IconButton,
-  Image
+  Image,
+  chakra
 } from '@chakra-ui/react'
 import NextLink from 'next/link'
 import { LayoutContainer } from '../components/Layout'
@@ -29,17 +29,18 @@ import {
   FcBusinessman,
   FcTemplate
 } from 'react-icons/fc'
-import {
-  FaAngleRight,
-  FaDiscord,
-  FaGithub,
-  FaLinkedin,
-  FaTwitter,
-  FaYoutube
-} from 'react-icons/fa'
+import { FaAngleRight } from 'react-icons/fa'
 import { ContentTabs } from '../components/ContentTabs'
 import { NextPage } from 'next'
 import { TextMuted } from '../components/TextMuted'
+import {
+  DiscordButton,
+  GitHubButton,
+  GitHubPersonalButton,
+  LinkedinPersonalButton,
+  TwitterButton,
+  YoutubeButton
+} from '../components/SocialMedia'
 
 const Hero: React.FC = () => {
   const header = useBreakpointValue({
@@ -68,38 +69,10 @@ const Hero: React.FC = () => {
           }}
         />
         <Box float="right" mt={2}>
-          <IconButton
-            as="a"
-            href="#"
-            variant="ghost"
-            aria-label="GitHub"
-            color="gray.500"
-            icon={<FaGithub fontSize="20px" />}
-          />
-          <IconButton
-            as="a"
-            href="#"
-            variant="ghost"
-            aria-label="Youtube"
-            color="gray.500"
-            icon={<FaYoutube fontSize="20px" />}
-          />
-          <IconButton
-            as="a"
-            href="#"
-            variant="ghost"
-            aria-label="Twitter"
-            color="gray.500"
-            icon={<FaTwitter fontSize="20px" />}
-          />
-          <IconButton
-            as="a"
-            href="#"
-            variant="ghost"
-            aria-label="Discord"
-            color="blue.500"
-            icon={<FaDiscord fontSize="20px" />}
-          />
+          <YoutubeButton />
+          <TwitterButton />
+          <GitHubButton />
+          <DiscordButton />
         </Box>
       </Box>
     </Center>
@@ -214,32 +187,15 @@ const Index: NextPage = () => {
           <Box>
             <Image rounded="full" src="/headshot.png" w={450} />
             <Center mt={2}>
-              <IconButton
-                as="a"
-                href="#"
-                variant="ghost"
-                aria-label="Twitter"
-                icon={<FaTwitter fontSize="20px" />}
-              />
-              <IconButton
-                as="a"
-                href="#"
-                variant="ghost"
-                aria-label="GitHub"
-                icon={<FaGithub fontSize="20px" />}
-              />
-              <IconButton
-                as="a"
-                href="#"
-                variant="ghost"
-                aria-label="Linkedin"
-                icon={<FaLinkedin fontSize="20px" />}
-              />
+              <TwitterButton />
+              <LinkedinPersonalButton />
+              <GitHubPersonalButton />
             </Center>
           </Box>
           <Box fontSize="xl" ml={10}>
             <Heading as="h4" fontSize="5xl" mt={2}>
-              Hi there, I'm Justin Brooks.
+              Hi there, I'm{' '}
+              <chakra.span color="purple.300">Justin Brooks</chakra.span>.
             </Heading>
             <Text>
               My goal is to make learning software engaging, easy and quick.

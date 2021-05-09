@@ -17,8 +17,9 @@ import { Content } from '../content'
 
 export type ContentCardProps = BoxProps & Content
 
-const tagColors: Record<string, string> = {
+export const tagColors: Record<string, string> = {
   vue: 'green',
+  vuex: 'green',
   quasar: 'cyan',
   react: 'blue',
   javascript: 'yellow',
@@ -51,7 +52,7 @@ export const HContentCard: React.FC<ContentCardProps> = props => {
       <Flex
         m={2}
         rounded="md"
-        _hover={{ bgColor: 'gray.700' }}
+        _hover={{ bgColor: useColorModeValue('gray.200', 'whiteAlpha.100') }}
         cursor="pointer"
         p={2}
       >
