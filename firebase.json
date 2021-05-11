@@ -4,11 +4,12 @@
     "indexes": "firestore.indexes.json"
   },
   "functions": {
-    "predeploy": ["yarn build"],
-    "source": "packages/functions"
+    "predeploy": ["yarn build:funcs"],
+    "source": "packages/functions",
+    "runtime": "nodejs12"
   },
   "hosting": {
-    "predeploy": ["yarn build"],
+    "predeploy": ["yarn build:web"],
     "public": "packages/website/out",
     "ignore": ["firebase.json", "**/.*", "**/node_modules/**"]
   }

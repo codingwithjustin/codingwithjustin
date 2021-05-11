@@ -8,8 +8,11 @@
   "version": "1",
   "scripts": {
     "dev": "yarn workspace @cwj/web dev",
-    "build": "yarn workspace @cwj/web build",
-    "lint": "eslint --ext .tsx,.ts,.jsx,.js . --fix"
+    "build": "yarn build:web && yarn build:funcs",
+    "build:web": "yarn workspace @cwj/web build",
+    "build:funcs": "yarn workspace @cwj/functions build",
+    "lint": "eslint --ext .tsx,.ts,.jsx,.js . --fix",
+    "deploy": "firebase deploy"
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^4.17.0",
