@@ -1,0 +1,15 @@
+{
+  "firestore": {
+    "rules": "firestore.rules",
+    "indexes": "firestore.indexes.json"
+  },
+  "functions": {
+    "predeploy": ["yarn build"],
+    "source": "packages/functions"
+  },
+  "hosting": {
+    "predeploy": ["yarn build"],
+    "public": "packages/website/out",
+    "ignore": ["firebase.json", "**/.*", "**/node_modules/**"]
+  }
+}
