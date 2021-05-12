@@ -5,15 +5,17 @@ import {
   FlexProps,
   Heading,
   Spacer,
-  useColorModeValue,
-} from '@chakra-ui/react';
-import NextLink from 'next/link';
-import React from 'react';
-import {SignInButton} from './Auth';
-import {DarkModeSwitch} from './DarkModeSwitch';
-import {SearchInput} from './SearchInput';
+  useColorModeValue
+} from '@chakra-ui/react'
+import NextLink from 'next/link'
+import React from 'react'
+import { useAuthState } from '../firebase'
+import { SignInButton } from './Auth'
+import { DarkModeSwitch } from './DarkModeSwitch'
+import { SearchInput } from './SearchInput'
 
-export const NavBar: React.FC<FlexProps> = (props) => {
+export const NavBar: React.FC<FlexProps> = props => {
+  const { isLoggedIn, signOut } = useAuthState()
   return (
     <Flex
       {...props}
@@ -45,8 +47,14 @@ export const NavBar: React.FC<FlexProps> = (props) => {
       </Box>
       <Box>
         <DarkModeSwitch mr={2} />
-        <SignInButton mr={2} variant="outline" colorScheme="green" />
+        {isLoggedIn ? (
+          <Button mr={2} variant="outline" onClick={signOut}>
+            Sign out
+          </Button>
+        ) : (
+          <SignInButton mr={2} variant="outline" colorScheme="green" />
+        )}
       </Box>
     </Flex>
-  );
-};
+  )
+}

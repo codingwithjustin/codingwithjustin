@@ -1,0 +1,2 @@
+export const discordPublicKey =
+  'a135d150422f0fc80f03392f6163190184dd4391fe568f0c830346fe98b10d73'

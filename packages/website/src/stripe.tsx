@@ -2,7 +2,7 @@ import React from 'react'
 import { loadStripe, Stripe } from '@stripe/stripe-js'
 import { Elements } from '@stripe/react-stripe-js'
 
-const STRIPE_KEY = process.env.NEXT_PUBLIC_STRIPE_KEY
+const STRIPE_KEY = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
 
 let stripePromise: Promise<Stripe | null>
 

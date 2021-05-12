@@ -11,12 +11,15 @@ import {
   Text,
   Button,
   Box,
-  HeadingProps
+  HeadingProps,
+  useDisclosure
 } from '@chakra-ui/react'
-import React, { useContext } from 'react'
+import React, { useContext, useEffect } from 'react'
 import { IconType } from 'react-icons'
 
 import { FaCheck } from 'react-icons/fa'
+import { LoginModal } from './Auth'
+import { PaymentModal } from './PaymentForm'
 import { TextMuted } from './TextMuted'
 
 const PricingContext = React.createContext({
@@ -113,16 +116,46 @@ export const PricingFeatures: React.FC<PricingFeaturesProps> = props => {
 
 export const PricingButton: React.FC = ({ children }) => {
   const { isPopular, colorScheme } = useContext(PricingContext)
+  const { isOpen, onOpen, onClose } = useDisclosure()
+  const {
+    isOpen: isLoginOpen,
+    onOpen: onLoginOpen,
+    onClose: onLoginClose
+  } = useDisclosure()
+
+  useEffect(() => {
+    if (isOpen) {
+      onLoginOpen()
+    }
+  }, [isOpen, onLoginOpen])
   return (
-    <Button
-      size="lg"
-      fontWeight="bold"
-      letterSpacing="wide"
-      w="full"
-      colorScheme={isPopular ? colorScheme : undefined}
-    >
-      {children}
-    </Button>
+    <>
+      <Button
+        size="lg"
+        fontWeight="bold"
+        letterSpacing="wide"
+        isFullWidth
+        colorScheme={isPopular ? colorScheme : undefined}
+        onClick={onOpen}
+      >
+        {children}
+      </Button>
+
+      <LoginModal
+        isOpen={isLoginOpen}
+        onClose={onLoginClose}
+        title="Login Required"
+      />
+      <PaymentModal
+        isOpen={isOpen}
+        onClose={onClose}
+        membership={{
+          name: 'Lifetime Membership',
+          price: '$168.00',
+          planId: 'test'
+        }}
+      />
+    </>
   )
 }
 

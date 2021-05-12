@@ -11,10 +11,13 @@ import {
   ModalOverlay,
   ModalContent,
   ModalBody,
-  VStack
+  VStack,
+  ModalProps,
+  ModalCloseButton
 } from '@chakra-ui/react'
 import React from 'react'
 import { FaApple, FaGithub, FaGoogle } from 'react-icons/fa'
+import { useSignIn } from '../firebase'
 import { TextMuted } from './TextMuted'
 
 export const AuthHeader: React.FC<HeadingProps> = props => (
@@ -32,19 +35,23 @@ export const AuthText: React.FC<TextProps> = props => (
   ></Text>
 )
 
-export const GoogleAuthButton: React.FC<ButtonProps> = props => (
-  <Button
-    bgColor={useColorModeValue('red.500', 'red.600')}
-    color="white"
-    _hover={{ bgColor: useColorModeValue('red.600', 'red.500') }}
-    leftIcon={<FaGoogle />}
-    size="lg"
-    isFullWidth
-    {...props}
-  >
-    Google
-  </Button>
-)
+export const GoogleAuthButton: React.FC<ButtonProps> = props => {
+  const { google } = useSignIn()
+  return (
+    <Button
+      bgColor={useColorModeValue('red.500', 'red.600')}
+      color="white"
+      _hover={{ bgColor: useColorModeValue('red.600', 'red.500') }}
+      leftIcon={<FaGoogle />}
+      size="lg"
+      isFullWidth
+      {...props}
+      onClick={() => google()}
+    >
+      Google
+    </Button>
+  )
+}
 
 export const GithubAuthButton: React.FC<ButtonProps> = props => (
   <Button
@@ -74,10 +81,40 @@ export const AppleAuthButton: React.FC<ButtonProps> = props => (
     size="lg"
     isFullWidth
     {...props}
+    disabled
   >
     Apple
   </Button>
 )
+
+export interface LoginModalProps extends Omit<ModalProps, 'children'> {
+  title?: string
+}
+
+export const LoginModal: React.FC<LoginModalProps> = props => {
+  const { title = 'Welcome back!' } = props
+  return (
+    <Modal blockScrollOnMount={true} {...props}>
+      <ModalOverlay />
+      <ModalContent>
+        <ModalCloseButton />
+        <ModalBody m={5} py={8}>
+          <AuthHeader>{title}</AuthHeader>
+          <AuthText>Sign in to continue</AuthText>
+          <VStack>
+            <GoogleAuthButton />
+            <GithubAuthButton />
+            <AppleAuthButton />
+          </VStack>
+          <TextMuted mt={10} fontSize="sm">
+            By signing in you agree to our Terms of Service and Privacy Policy.
+            We&lsquo;ll send you account-related emails on rare occasions.
+          </TextMuted>
+        </ModalBody>
+      </ModalContent>
+    </Modal>
+  )
+}
 
 export const SignInButton: React.FC<ButtonProps> = props => {
   const { isOpen, onOpen, onClose } = useDisclosure()
@@ -86,28 +123,7 @@ export const SignInButton: React.FC<ButtonProps> = props => {
       <Button {...props} onClick={onOpen}>
         Sign In
       </Button>
-
-      <Modal blockScrollOnMount={true} isOpen={isOpen} onClose={onClose}>
-        <ModalOverlay />
-        <ModalContent>
-          {/* <ModalHeader>Modal Title</ModalHeader>
-          <ModalCloseButton /> */}
-          <ModalBody m={5} py={8}>
-            <AuthHeader>Welcome back!</AuthHeader>
-            <AuthText>Sign in to continue</AuthText>
-            <VStack>
-              <GoogleAuthButton />
-              <GithubAuthButton />
-              <AppleAuthButton />
-            </VStack>
-            <TextMuted mt={10} fontSize="sm">
-              By signing in you agree to our Terms of Service and Privacy
-              Policy. We&lsquo;ll send you account-related emails on rare
-              occasions.
-            </TextMuted>
-          </ModalBody>
-        </ModalContent>
-      </Modal>
+      <LoginModal isOpen={isOpen} onClose={onClose} />
     </>
   )
 }
