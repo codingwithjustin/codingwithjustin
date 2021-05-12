@@ -1,5 +1,7 @@
 import * as functions from 'firebase-functions'
 import * as nacl from 'tweetnacl'
+import * as Firestore from '../firestore'
+
 import { discordPublicKey } from './config'
 
 export const verify = (req: functions.https.Request) => {
@@ -16,10 +18,28 @@ export const verify = (req: functions.https.Request) => {
   return isVerified
 }
 
-interface DiscordUser {
+export interface DiscordUser {
   id: string
   username: string
   avatar: string
 }
 
-export const linkAccount = (_: string, __: DiscordUser) => {}
+export const linkAccount = async (email: string, discord: DiscordUser) => {
+  const user = await Firestore.getUserIdByEmail(email)
+  if (user == null)
+    throw new Error('Email address is not associated with another account.')
+  if (user.discord?.username === discord.username)
+    throw new Error('Your account is already linked. Use /unlink to remove it.')
+  if (user.discord != null)
+    throw new Error(
+      'That account already has a discord account associated with it.'
+    )
+  const { uid } = user
+  await Firestore.updateUser(uid, { discord })
+}
+
+export const unlinkAccount = async (discordUser: DiscordUser) => {
+  const user = await Firestore.getUserByDiscordId(discordUser.id)
+  if (user == null) throw new Error('No account has been linked.')
+  await Firestore.updateUser(user.uid, { discord: null })
+}

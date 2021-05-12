@@ -4,7 +4,6 @@
   "author": "Justin Brooks",
   "private": true,
   "license": "private",
-  "type": "module",
   "scripts": {
     "dev": "next --port 4000",
     "build": "next build && next export",

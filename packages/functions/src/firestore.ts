@@ -29,3 +29,23 @@ export const getUser = (uid: string) =>
     .doc(uid)
     .get()
     .then(doc => doc.data())
+
+export const getUserIdByEmail = async (email: string) => {
+  return db
+    .collection('users')
+    .where('email', '==', email)
+    .limit(1)
+    .get()
+    .then(d => d.docs?.[0].data())
+    .catch(() => undefined)
+}
+
+export const getUserByDiscordId = async (discordId: string) => {
+  return db
+    .collection('users')
+    .where('discord.id', '==', discordId)
+    .limit(1)
+    .get()
+    .then(d => d.docs?.[0].data())
+    .catch(() => undefined)
+}

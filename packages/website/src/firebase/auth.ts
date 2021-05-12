@@ -58,3 +58,7 @@ export const useAuthState = () => {
 
   return { user, isLoggedIn, error, signOut }
 }
+
+export const useAuthData = () => {
+  useEffect(() => {})
+}
