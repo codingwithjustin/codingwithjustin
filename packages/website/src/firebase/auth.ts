@@ -1,3 +1,4 @@
+import { doc, DocumentReference, getFirestore } from '@firebase/firestore'
 import {
   getAuth,
   GithubAuthProvider,
@@ -8,6 +9,14 @@ import {
 } from 'firebase/auth'
 import { useEffect, useState } from 'react'
 import { useAnalytics } from './analytics'
+import { useDocument } from './firestore'
+
+import { getFunctions, httpsCallable } from 'firebase/functions'
+import { useRouter } from 'next/router'
+const setCustomUserClaims = httpsCallable<unknown, { refetch: boolean }>(
+  getFunctions(),
+  'userCustomClaims'
+)
 
 export const useSignIn = () => {
   const auth = getAuth()
@@ -17,9 +26,11 @@ export const useSignIn = () => {
 
   const loginHandler = async (promise: Promise<UserCredential>) => {
     try {
-      const result = await promise
-      result.user.email
-      logEvent('login', { email: result.user.email })
+      const { user } = await promise
+      logEvent('login', { email: user.email })
+
+      const { data } = await setCustomUserClaims()
+      if (data.refetch) await auth.currentUser?.getIdToken(true)
     } catch (err) {
       // eslint-disable-next-line no-console
       console.error(err)
@@ -44,6 +55,7 @@ export const useSignIn = () => {
 
 export const useAuthState = () => {
   const [user, setUser] = useState<User | null>(null)
+  const [claims, setClaims] = useState<{ admin?: boolean } | null>()
   const [error, setError] = useState<Error | null>(null)
 
   useEffect(() => {
@@ -53,12 +65,43 @@ export const useAuthState = () => {
     )
   }, [])
 
+  useEffect(() => {
+    user
+      ? user.getIdTokenResult().then(s => setClaims(s.claims as any))
+      : setClaims(null)
+  }, [user])
+
   const isLoggedIn = user != null
   const signOut = () => getAuth().signOut()
-
-  return { user, isLoggedIn, error, signOut }
+  const isAdmin = !!claims?.admin
+  return { user, isLoggedIn, isAdmin, error, claims, signOut }
 }
 
-export const useAuthData = () => {
-  useEffect(() => {})
+export const useUserData = () => {
+  const { user } = useAuthState()
+  const [docRef, setDocRef] = useState<DocumentReference>()
+  useEffect(
+    () => setDocRef(user ? doc(getFirestore(), 'users', user.uid) : undefined),
+    [user]
+  )
+  const { value } = useDocument<User>(docRef)
+  return value
+}
+
+export const useAdminRedirect = () => {
+  const router = useRouter()
+  const [loading, setLoading] = useState(false)
+  useEffect(() => {
+    setLoading(true)
+    const user = getAuth().currentUser
+    if (user == null) router.push('/')
+    user?.getIdTokenResult().then(r => {
+      if (!r.claims.admin) {
+        router.push('/')
+        return
+      }
+      setLoading(false)
+    })
+  }, [router])
+  return loading
 }

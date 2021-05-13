@@ -33,7 +33,7 @@ export const useDocument = <T = DocumentData>(ref?: DocumentReference) => {
   useEffect(() => {
     if (refState == null) return
     setLoading(true)
-    return onSnapshot<T>(
+    const unsubscribe = onSnapshot<T>(
       refState,
       doc => {
         setLoading(false)
@@ -41,6 +41,10 @@ export const useDocument = <T = DocumentData>(ref?: DocumentReference) => {
       },
       setError
     )
+    return () => {
+      setValue(undefined)
+      unsubscribe()
+    }
   }, [refState])
 
   return { value, error, loading }

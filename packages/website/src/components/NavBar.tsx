@@ -15,7 +15,7 @@ import { DarkModeSwitch } from './DarkModeSwitch'
 import { SearchInput } from './SearchInput'
 
 export const NavBar: React.FC<FlexProps> = props => {
-  const { isLoggedIn, signOut } = useAuthState()
+  const { isLoggedIn, signOut, isAdmin } = useAuthState()
   return (
     <Flex
       {...props}
@@ -40,6 +40,13 @@ export const NavBar: React.FC<FlexProps> = props => {
             Pricing
           </Button>
         </NextLink>
+        {isAdmin && (
+          <NextLink href="/admin" passHref>
+            <Button as="a" colorScheme="red" variant="ghost">
+              Admin
+            </Button>
+          </NextLink>
+        )}
       </Box>
       <Spacer />
       <Box w="25rem" mr={4}>

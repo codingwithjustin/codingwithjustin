@@ -3,7 +3,7 @@ import * as functions from 'firebase-functions'
 import { linkAccount, unlinkAccount, verify } from './helpers'
 import { Interaction } from './interaction'
 
-export const discordCommand = functions.https.onRequest(
+export const discordCommands = functions.https.onRequest(
   async (request, response) => {
     if (request.method !== 'POST') {
       response.status(405).end()

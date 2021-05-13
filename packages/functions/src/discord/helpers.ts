@@ -41,5 +41,5 @@ export const linkAccount = async (email: string, discord: DiscordUser) => {
 export const unlinkAccount = async (discordUser: DiscordUser) => {
   const user = await Firestore.getUserByDiscordId(discordUser.id)
   if (user == null) throw new Error('No account has been linked.')
-  await Firestore.updateUser(user.uid, { discord: null })
+  await Firestore.updateUser(user.uid, { discord: undefined })
 }
