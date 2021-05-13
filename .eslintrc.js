@@ -8,7 +8,7 @@ module.exports = {
   },
   parser: '@typescript-eslint/parser',
   parserOptions: {
-    project: ['./tsconfig.json']
+    project: ['./tsconfig.json', './packages/*/tsconfig.json']
   },
   extends: [
     'eslint:recommended',
@@ -43,6 +43,7 @@ module.exports = {
     '@typescript-eslint/explicit-module-boundary-types': 'off',
     '@typescript-eslint/no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
     'no-console': 'warn',
-    'require-jsdoc': 'off'
+    'require-jsdoc': 'off',
+    'import/no-unresolved': 'off'
   }
 }

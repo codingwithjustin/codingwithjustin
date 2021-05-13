@@ -30,7 +30,7 @@ import {
   FcTemplate
 } from 'react-icons/fc'
 import { FaAngleRight } from 'react-icons/fa'
-import { ContentTabs } from '../components/ContentTabs'
+import { ContentTabs } from '@/components/ContentTabs'
 import { NextPage } from 'next'
 import { TextMuted } from '../components/TextMuted'
 import {

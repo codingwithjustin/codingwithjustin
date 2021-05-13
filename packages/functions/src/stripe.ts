@@ -20,8 +20,8 @@ export const createCustomer = async (user: UserRecord) => {
 
 export const getCustomer = async (uid: string) => {
   const user = await Firestore.getUser(uid)
-  const customerId = user?.stripeCustomerId
-  if (customerId === null) return undefined
+  const customerId = user.stripeCustomerId
+  if (customerId == null) return undefined
   return stripe.customers.retrieve(customerId)
 }
 
