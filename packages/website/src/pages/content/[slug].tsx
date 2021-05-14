@@ -90,7 +90,7 @@ const ContentPage: NextPage<ContentPageProps> = ({
   const publishedAtDate = new Date(content.publishedAt * 1000)
   return (
     <LayoutContainer maxW="6xl">
-      <Heading as="h1" mb={8} fontSize="5xl">
+      <Heading as="h1" mb={8} fontSize={{ base: '5xl', lg: '6xl' }}>
         {content.title}
       </Heading>
 
