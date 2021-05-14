@@ -12,8 +12,8 @@ import {
 } from '@chakra-ui/react'
 import React from 'react'
 import NextLink from 'next/link'
-import { TextMuted } from './TextMuted'
-import { Content } from '../content'
+import { TextMuted } from '../TextMuted'
+import { Content } from '@shared/firestore'
 
 export type ContentCardProps = BoxProps & Content
 
@@ -45,10 +45,26 @@ const MembershipTag: React.FC<TagProps> = props => (
   </CardTag>
 )
 
+const formatSeconds = (secNum: number) => {
+  const hours = Math.floor(secNum / 3600)
+  const minutes = Math.floor(secNum / 60) % 60
+  const seconds = secNum % 60
+
+  return [hours, minutes, seconds]
+    .map(v => (v < 10 ? '0' + v : v))
+    .filter((v, i) => v !== '00' || i > 0)
+    .join(':')
+}
+
 export const HContentCard: React.FC<ContentCardProps> = props => {
-  const { id, type, thumbnail, title, description, tags, membership } = props
+  const { type, title, description, tags, membershipOnly, slug } = props
+
+  const thumbnail =
+    'youtubeId' in props
+      ? `https://i.ytimg.com/vi/${props.youtubeId}/hqdefault.jpg`
+      : props.thumbnail
   return (
-    <NextLink href={`/${type}/${id}`}>
+    <NextLink href={`/content/${slug}`}>
       <Flex
         m={2}
         rounded="md"
@@ -56,27 +72,35 @@ export const HContentCard: React.FC<ContentCardProps> = props => {
         cursor="pointer"
         p={2}
       >
-        <Box position="relative">
-          <AspectRatio w={275} ratio={16 / 9} flexShrink={0}>
-            <Image src={thumbnail} rounded="md" />
-          </AspectRatio>
-          <Tag
-            position="absolute"
-            bottom={1}
-            right={1}
-            fontSize="xs"
-            colorScheme="blackAlpha"
-            variant="solid"
-          >
-            2:30
-          </Tag>
+        <Box>
+          <Box position="relative">
+            <AspectRatio w={275} ratio={16 / 9} flexShrink={0}>
+              <Image src={thumbnail} rounded="md" />
+            </AspectRatio>
+            {'seconds' in props && (
+              <Tag
+                position="absolute"
+                bottom={1}
+                right={1}
+                minH={0}
+                p={1}
+                fontSize="xs"
+                colorScheme="blackAlpha"
+                variant="solid"
+              >
+                {formatSeconds(props.seconds)}
+              </Tag>
+            )}
+          </Box>
         </Box>
         <Box marginLeft={4} flexGrow={1} h="full">
-          <Heading fontSize="xl">{title}</Heading>
-          <Text>{description}</Text>
+          <Heading fontSize="xl" noOfLines={2}>
+            {title}
+          </Heading>
+          <Text noOfLines={3}>{description}</Text>
 
-          {membership && <MembershipTag />}
-          <CardTag>{type}</CardTag>
+          {membershipOnly && <MembershipTag />}
+          <CardTag ml={0}>{type}</CardTag>
           {tags?.map((t, i) => (
             <CardTag key={i} m={1}>
               {t}
@@ -90,12 +114,17 @@ export const HContentCard: React.FC<ContentCardProps> = props => {
 }
 
 export const VContentCard: React.FC<ContentCardProps> = props => {
-  const { thumbnail, title, description, tags, membership, ...rest } = props
+  const { title, description, tags, membershipOnly, ...rest } = props
+  const thumbnail =
+    'youtubeId' in props
+      ? `https://i.ytimg.com/vi/${props.youtubeId}/maxresdefault.jpg`
+      : props.thumbnail
   return (
     <Box
       rounded="md"
       bgColor={useColorModeValue('white', 'gray.700')}
       boxShadow="md"
+      w={300}
       {...rest}
     >
       <Image
@@ -112,7 +141,7 @@ export const VContentCard: React.FC<ContentCardProps> = props => {
           {description}
         </Text>
         <Box>
-          {membership && <MembershipTag />}
+          {membershipOnly && <MembershipTag />}
 
           {tags?.map((t, i) => (
             <CardTag key={i} m={1}>

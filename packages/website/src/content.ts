@@ -1,14 +1,5 @@
-export interface Content {
-  type: 'video' | 'course' | 'blog'
-  title: string
-  description: string
-  thumbnail: string
-  tags?: string[]
-  membership?: boolean
-  level: 'beginner' | 'intermediate' | 'advanced' | 'expert'
-  publishedAt?: string
-}
-
+import { collection, getDocs, getFirestore } from '@firebase/firestore'
+import { Content, Course, Video } from '@shared/firestore'
 import { matchSorter } from 'match-sorter'
 import youtubeVideos from './content.json'
 
@@ -32,18 +23,29 @@ export const hasTag = (value: string) => {
   return contents.filter(s => s.tags?.includes(value))
 }
 
-/**
- * Conte Filter
- */
+let content: Content[] = []
+
+export const get = async () => {
+  if (content.length === 0) {
+    const result = await getDocs<Content>(collection(getFirestore(), 'content'))
+    content = result.docs.map(d => ({ id: d.id, ...d.data() }))
+  }
+  return content
+}
+
 export class ContentFilter {
-  static content() {
-    return new ContentFilter()
+  static async content() {
+    return new ContentFilter(await get())
   }
 
   content: Content[]
 
-  constructor() {
-    this.content = contents
+  constructor(content: Content[]) {
+    this.content = content
+  }
+
+  findBySlug(slug: string) {
+    return this.content.find(f => f.slug === slug)
   }
 
   search(value: string) {
@@ -78,7 +80,7 @@ export class ContentFilter {
   }
 
   premium() {
-    this.where(c => c.membership)
+    this.where(c => c.membershipOnly)
     return this
   }
 
@@ -120,12 +122,13 @@ export class ContentFilter {
   }
 
   clone() {
-    const filter = new ContentFilter()
-    filter.content = [...this.content]
-    return filter
+    return new ContentFilter([...this.content])
   }
 
   get() {
     return this.content
   }
 }
+
+export const isVideo = (a: Content): a is Video => a.type === 'video'
+export const isCourse = (a: Content): a is Course => a.type === 'course'

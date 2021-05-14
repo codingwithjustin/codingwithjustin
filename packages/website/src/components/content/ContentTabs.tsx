@@ -15,7 +15,7 @@ import {
 } from '@chakra-ui/react'
 import React from 'react'
 import NextLink from 'next/link'
-import { ContentFilter } from '../content'
+import { ContentFilter } from '../../content'
 
 import { VContentCard } from './ContentCard'
 import { ContentCarousel } from './ContentCarousel'
@@ -84,7 +84,6 @@ export const ContentTabs: React.FC = () => {
                 .map(s => (
                   <VContentCard
                     key={s.title}
-                    w={300}
                     flexShrink={0}
                     marginX={2}
                     {...s}
@@ -109,7 +108,6 @@ export const ContentTabs: React.FC = () => {
                 .map(s => (
                   <VContentCard
                     key={s.title}
-                    w={300}
                     flexShrink={0}
                     marginX={2}
                     {...s}
@@ -131,7 +129,6 @@ export const ContentTabs: React.FC = () => {
                 .map(s => (
                   <VContentCard
                     key={s.title}
-                    w={300}
                     flexShrink={0}
                     marginX={2}
                     {...s}
@@ -153,7 +150,6 @@ export const ContentTabs: React.FC = () => {
                 .map(s => (
                   <VContentCard
                     key={s.title}
-                    w={300}
                     flexShrink={0}
                     marginX={2}
                     {...s}

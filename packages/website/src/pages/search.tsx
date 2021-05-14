@@ -3,7 +3,7 @@ import { Box, Flex, Heading, Divider, Accordion } from '@chakra-ui/react'
 import React, { useMemo } from 'react'
 import { LayoutContainer } from '../components/Layout'
 import { useRouter } from 'next/router'
-import { HContentCard } from '../components/ContentCard'
+import { HContentCard } from '../components/content/ContentCard'
 import { NextPage } from 'next'
 
 import { ContentFilter } from '../content'

@@ -12,8 +12,11 @@ import { GetStaticPaths, GetStaticProps, NextPage } from 'next'
 import NextLink from 'next/link'
 
 import React, { useMemo } from 'react'
-import { HContentCard, VContentCard } from '../../components/ContentCard'
-import { ContentCarousel } from '../../components/ContentCarousel'
+import {
+  HContentCard,
+  VContentCard
+} from '../../components/content/ContentCard'
+import { ContentCarousel } from '../../components/content/ContentCarousel'
 import { FilterCheckbox, QueryFilter } from '../../components/Filter'
 import { LayoutContainer } from '../../components/Layout'
 
@@ -61,13 +64,7 @@ const Videos: NextPage<{ tag?: string }> = ({ tag }) => {
           <Box borderWidth="1px" borderRadius="lg">
             <ContentCarousel paddingY={7} paddingX={5}>
               {membershipContent.map(s => (
-                <VContentCard
-                  key={s.title}
-                  w={250}
-                  flexShrink={0}
-                  marginX={2}
-                  {...s}
-                />
+                <VContentCard key={s.title} flexShrink={0} marginX={2} {...s} />
               ))}
             </ContentCarousel>
           </Box>

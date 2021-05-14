@@ -1,9 +1,17 @@
 import {
+  Avatar,
   Box,
   Button,
   Flex,
   FlexProps,
   Heading,
+  LinkBox,
+  Menu,
+  MenuButton,
+  MenuDivider,
+  MenuItem,
+  MenuList,
+  MenuProps,
   Spacer,
   useColorModeValue
 } from '@chakra-ui/react'
@@ -14,8 +22,34 @@ import { SignInButton } from './Auth'
 import { DarkModeSwitch } from './DarkModeSwitch'
 import { SearchInput } from './SearchInput'
 
+const UserMenu: React.FC<Omit<MenuProps, 'children'>> = props => {
+  const { user, signOut } = useAuthState()
+  return (
+    <Menu {...props}>
+      <MenuButton
+        as={Avatar}
+        m={1}
+        size="sm"
+        cursor="pointer"
+        src={user?.photoURL}
+        name={user?.displayName ?? ''}
+      />
+      <MenuList>
+        <NextLink href="/membership" passHref>
+          <MenuItem as={LinkBox}>Membership</MenuItem>
+        </NextLink>
+        <NextLink href="/settings" passHref>
+          <MenuItem as={LinkBox}>Settings</MenuItem>
+        </NextLink>
+        <MenuDivider />
+        <MenuItem onClick={signOut}>Sign out</MenuItem>
+      </MenuList>
+    </Menu>
+  )
+}
+
 export const NavBar: React.FC<FlexProps> = props => {
-  const { isLoggedIn, signOut, isAdmin } = useAuthState()
+  const { isLoggedIn, isAdmin } = useAuthState()
   return (
     <Flex
       {...props}
@@ -55,9 +89,7 @@ export const NavBar: React.FC<FlexProps> = props => {
       <Box>
         <DarkModeSwitch mr={2} />
         {isLoggedIn ? (
-          <Button mr={2} variant="outline" onClick={signOut}>
-            Sign out
-          </Button>
+          <UserMenu />
         ) : (
           <SignInButton mr={2} variant="outline" colorScheme="green" />
         )}

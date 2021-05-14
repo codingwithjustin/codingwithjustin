@@ -8,27 +8,24 @@ import {
   SimpleGrid,
   useColorModeValue
 } from '@chakra-ui/react'
-import { NextPage } from 'next'
+import { GetStaticProps, NextPage } from 'next'
 import NextLink from 'next/link'
 import React from 'react'
-import { HContentCard, VContentCard } from '../components/ContentCard'
-import { ContentCarousel } from '../components/ContentCarousel'
-import { FilterCheckbox, QueryFilter } from '../components/Filter'
-import { LayoutContainer } from '../components/Layout'
-import { TextMuted } from '../components/TextMuted'
+import { HContentCard, VContentCard } from '@/components/content/ContentCard'
+import { ContentCarousel } from '@/components/content/ContentCarousel'
+import { FilterCheckbox, QueryFilter } from '@/components/Filter'
+import { LayoutContainer } from '@/components/Layout'
+import { TextMuted } from '@/components/TextMuted'
 
-import { ContentFilter } from '../content'
+import { ContentFilter } from '@/content'
+import { Content } from '@shared/firestore'
 
-const content = ContentFilter.content()
-const membershipContent = content.clone().premium()
-const popularTags = content
-  ?.popularTags()
-  .slice(0, 10)
-  .map(([t]) => t)
-
-const Videos: NextPage = () => {
+const Videos: NextPage<{
+  content: Content[]
+  membershipContent: Content[]
+  popularTags: string[]
+}> = ({ content, membershipContent, popularTags }) => {
   const tagColor = useColorModeValue('green.400', 'green.200')
-
   return (
     <LayoutContainer>
       <Heading as="h1" fontSize="4xl" mb={2}>
@@ -117,6 +114,16 @@ const Videos: NextPage = () => {
       </Box>
     </LayoutContainer>
   )
+}
+
+export const getStaticProps: GetStaticProps = async () => {
+  const content = await ContentFilter.content()
+  const popularTags = content
+    .popularTags()
+    .slice(0, 10)
+    .map(([t]) => t)
+  const membershipContent = content.clone().premium().get()
+  return { props: { content: content.get(), membershipContent, popularTags } }
 }
 
 export default Videos

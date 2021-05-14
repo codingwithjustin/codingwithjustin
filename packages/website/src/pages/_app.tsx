@@ -4,6 +4,8 @@ import React from 'react'
 import { StripeProvider } from '../stripe'
 import theme from '../theme'
 import { getApp, initializeApp } from 'firebase/app'
+import { MDXProvider } from '@mdx-js/react'
+import { components } from '@/mdx'
 
 try {
   getApp()
@@ -22,9 +24,11 @@ try {
 const App = ({ Component, pageProps }: AppProps) => {
   return (
     <ChakraProvider resetCSS theme={theme}>
-      <StripeProvider>
-        <Component {...pageProps} />
-      </StripeProvider>
+      <MDXProvider components={components}>
+        <StripeProvider>
+          <Component {...pageProps} />
+        </StripeProvider>
+      </MDXProvider>
     </ChakraProvider>
   )
 }

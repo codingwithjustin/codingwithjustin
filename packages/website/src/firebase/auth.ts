@@ -10,7 +10,7 @@ import {
 import { useEffect, useState } from 'react'
 import { useAnalytics } from './analytics'
 import { useDocument } from './firestore'
-
+import { User as UserDocument } from '@shared/firestore'
 import { getFunctions, httpsCallable } from 'firebase/functions'
 import { useRouter } from 'next/router'
 const setCustomUserClaims = httpsCallable<unknown, { refetch: boolean }>(
@@ -84,7 +84,7 @@ export const useUserData = () => {
     () => setDocRef(user ? doc(getFirestore(), 'users', user.uid) : undefined),
     [user]
   )
-  const { value } = useDocument<User>(docRef)
+  const { value } = useDocument<UserDocument>(docRef)
   return value
 }
 
