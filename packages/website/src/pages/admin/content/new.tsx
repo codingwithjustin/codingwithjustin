@@ -11,7 +11,6 @@ import React, { useState } from 'react'
 const AdminIndex: NextPage = () => {
   const [content, setContent] = useState<any>({
     type: 'video',
-    youtubeId: '',
     title: '',
     slug: '',
     description: '',
@@ -48,10 +47,10 @@ const AdminIndex: NextPage = () => {
       <Box as="section">
         <Heading>Renders</Heading>
         <Box m={3}>
-          <VContentCard {...content} />
+          <VContentCard content={content} />
         </Box>
         <Box m={3}>
-          <HContentCard {...content} />
+          <HContentCard content={content} />
         </Box>
       </Box>
     </LayoutContainer>

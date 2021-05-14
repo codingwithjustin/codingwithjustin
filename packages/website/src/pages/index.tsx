@@ -30,8 +30,8 @@ import {
   FcTemplate
 } from 'react-icons/fc'
 import { FaAngleRight } from 'react-icons/fa'
-import { ContentTabs } from '@/components/content/ContentTabs'
-import { NextPage } from 'next'
+import { ContentTabs, ContentTabsProps } from '@/components/content/ContentTabs'
+import { GetStaticProps, NextPage } from 'next'
 import { TextMuted } from '../components/TextMuted'
 import {
   DiscordButton,
@@ -41,6 +41,7 @@ import {
   TwitterButton,
   YoutubeButton
 } from '../components/SocialMedia'
+import { ContentFilter } from '@/content'
 
 const Hero: React.FC = () => {
   const header = useBreakpointValue({
@@ -103,7 +104,7 @@ const Feature: React.FC<FeatureProps> = props => {
   )
 }
 
-const Index: NextPage = () => {
+const Index: NextPage<ContentTabsProps> = props => {
   return (
     <LayoutContainer maxWidth="6xl">
       <Hero />
@@ -134,7 +135,7 @@ const Index: NextPage = () => {
             week.
           </TextMuted>
         </Box>
-        <ContentTabs />
+        <ContentTabs {...props} />
       </Box>
 
       <Box as="section" marginY={48}>
@@ -207,6 +208,21 @@ const Index: NextPage = () => {
       </Box>
     </LayoutContainer>
   )
+}
+
+export const getStaticProps: GetStaticProps<ContentTabsProps> = async () => {
+  const content = await ContentFilter.content()
+
+  const hasTag = (tag: string) => content.clone().hasTag(tag).first(10).get()
+
+  return {
+    props: {
+      latest: content.clone().first(10).get(),
+      vue: hasTag('vue'),
+      javascript: hasTag('javascript'),
+      react: hasTag('react')
+    }
+  }
 }
 
 export default Index

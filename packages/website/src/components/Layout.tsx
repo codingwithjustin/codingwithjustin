@@ -1,9 +1,9 @@
-import React from 'react';
-import {Box, Container, ContainerProps} from '@chakra-ui/react';
-import {Footer} from './Footer';
-import {NavBar} from './NavBar';
+import React from 'react'
+import { Box, Container, ContainerProps } from '@chakra-ui/react'
+import { Footer } from './Footer'
+import { NavBar } from './NavBar'
 
-export const LayoutNavbarFooter: React.FC = ({children}) => {
+export const LayoutNavbarFooter: React.FC = ({ children }) => {
   return (
     <Box position="relative" minH="100vh" paddingBottom={24}>
       <NavBar />
@@ -12,18 +12,13 @@ export const LayoutNavbarFooter: React.FC = ({children}) => {
         <Footer />
       </Box>
     </Box>
-  );
-};
+  )
+}
 
-export const LayoutContainer: React.FC<ContainerProps> = ({
-  children,
-  ...rest
-}) => {
+export const LayoutContainer: React.FC<ContainerProps> = props => {
   return (
     <LayoutNavbarFooter>
-      <Container {...rest} maxW="7xl" mt={12} mb={16}>
-        {children}
-      </Container>
+      <Container maxW="7xl" mt={12} mb={16} {...props} />
     </LayoutNavbarFooter>
-  );
-};
+  )
+}

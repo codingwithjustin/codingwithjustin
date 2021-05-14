@@ -1,34 +1,13 @@
 import { collection, getDocs, getFirestore } from '@firebase/firestore'
 import { Content, Course, Video } from '@shared/firestore'
 import { matchSorter } from 'match-sorter'
-import youtubeVideos from './content.json'
-
-export const contents: Content[] = youtubeVideos.map(s => ({
-  type: s.type,
-  title: s.title,
-  description: s.description,
-  thumbnail: s.thumbnail,
-  tags: s.tags ?? [],
-  level: s.level
-  //   publishedAt: s.publishedAt
-})) as any
-
-export const search = (value: string) => {
-  return matchSorter(contents, value, {
-    keys: ['title', 'description', 'tags']
-  })
-}
-
-export const hasTag = (value: string) => {
-  return contents.filter(s => s.tags?.includes(value))
-}
 
 let content: Content[] = []
 
 export const get = async () => {
   if (content.length === 0) {
     const result = await getDocs<Content>(collection(getFirestore(), 'content'))
-    content = result.docs.map(d => ({ id: d.id, ...d.data() }))
+    content = result.docs.map(d => ({ ...d.data(), id: d.id }))
   }
   return content
 }

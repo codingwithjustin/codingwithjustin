@@ -47,7 +47,7 @@ const Videos: NextPage<{
                   w={250}
                   flexShrink={0}
                   marginX={2}
-                  {...s}
+                  content={s}
                 />
               ))}
             </ContentCarousel>
@@ -106,7 +106,7 @@ const Videos: NextPage<{
             {content.map((s, i) => (
               <Box key={i}>
                 {i !== 0 && <Divider />}
-                <HContentCard {...s} />
+                <HContentCard content={s} />
               </Box>
             ))}
           </Box>

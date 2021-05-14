@@ -118,7 +118,7 @@ export const CardInput: React.FC = () => {
   )
 }
 
-export const PaymentForm: React.FC<{ planId: string }> = ({ planId }) => {
+export const PaymentForm: React.FC<{ planId: string }> = () => {
   const stripe = useStripe()
   const elements = useElements()
 
@@ -139,8 +139,10 @@ export const PaymentForm: React.FC<{ planId: string }> = ({ planId }) => {
     })
 
     if (error) {
+      // eslint-disable-next-line no-console
       console.log('[error]', error)
     } else {
+      // eslint-disable-next-line no-console
       console.log('[PaymentMethod]', paymentMethod)
     }
   }

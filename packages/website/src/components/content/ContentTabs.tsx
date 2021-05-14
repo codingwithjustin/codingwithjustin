@@ -15,10 +15,10 @@ import {
 } from '@chakra-ui/react'
 import React from 'react'
 import NextLink from 'next/link'
-import { ContentFilter } from '../../content'
 
 import { VContentCard } from './ContentCard'
 import { ContentCarousel } from './ContentCarousel'
+import { Content } from '@shared/firestore'
 
 const StyledTab: React.FC = ({ children }) => (
   <Tab
@@ -58,7 +58,19 @@ const BannerHeader: React.FC<HeadingProps> = props => (
   <Heading as="h4" flexGrow={1} fontSize="2xl" {...props}></Heading>
 )
 
-export const ContentTabs: React.FC = () => {
+export interface ContentTabsProps {
+  latest: Content[]
+  javascript: Content[]
+  react: Content[]
+  vue: Content[]
+}
+
+export const ContentTabs: React.FC<ContentTabsProps> = ({
+  latest,
+  javascript,
+  react,
+  vue
+}) => {
   return (
     <Tabs variant="unstyled">
       <TabList>
@@ -79,16 +91,14 @@ export const ContentTabs: React.FC = () => {
             </Banner>
 
             <ContentCarousel pb={7} paddingX={5}>
-              {ContentFilter.content()
-                .first(10)
-                .map(s => (
-                  <VContentCard
-                    key={s.title}
-                    flexShrink={0}
-                    marginX={2}
-                    {...s}
-                  />
-                ))}
+              {latest.map(s => (
+                <VContentCard
+                  key={s.title}
+                  flexShrink={0}
+                  marginX={2}
+                  content={s}
+                />
+              ))}
             </ContentCarousel>
           </TabPanel>
 
@@ -102,17 +112,14 @@ export const ContentTabs: React.FC = () => {
               </BannerButton>
             </Banner>
             <ContentCarousel pb={7} paddingX={5}>
-              {ContentFilter.content()
-                .hasTag('javascript')
-                .first(10)
-                .map(s => (
-                  <VContentCard
-                    key={s.title}
-                    flexShrink={0}
-                    marginX={2}
-                    {...s}
-                  />
-                ))}
+              {javascript.map(s => (
+                <VContentCard
+                  key={s.title}
+                  flexShrink={0}
+                  marginX={2}
+                  content={s}
+                />
+              ))}
             </ContentCarousel>
           </TabPanel>
           <TabPanel p={0}>
@@ -123,17 +130,14 @@ export const ContentTabs: React.FC = () => {
               <BannerButton href="/tag/vue">Explore Vue</BannerButton>
             </Banner>
             <ContentCarousel pb={7} paddingX={5}>
-              {ContentFilter.content()
-                .hasTag('vue')
-                .first(10)
-                .map(s => (
-                  <VContentCard
-                    key={s.title}
-                    flexShrink={0}
-                    marginX={2}
-                    {...s}
-                  />
-                ))}
+              {vue.map(s => (
+                <VContentCard
+                  key={s.title}
+                  flexShrink={0}
+                  marginX={2}
+                  content={s}
+                />
+              ))}
             </ContentCarousel>
           </TabPanel>
           <TabPanel p={0}>
@@ -144,17 +148,14 @@ export const ContentTabs: React.FC = () => {
               <BannerButton href="/tag/react">Explore React</BannerButton>
             </Banner>
             <ContentCarousel pb={7} paddingX={5}>
-              {ContentFilter.content()
-                .hasTag('react')
-                .first(10)
-                .map(s => (
-                  <VContentCard
-                    key={s.title}
-                    flexShrink={0}
-                    marginX={2}
-                    {...s}
-                  />
-                ))}
+              {react.map(s => (
+                <VContentCard
+                  key={s.title}
+                  flexShrink={0}
+                  marginX={2}
+                  content={s}
+                />
+              ))}
             </ContentCarousel>
           </TabPanel>
         </TabPanels>

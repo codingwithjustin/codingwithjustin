@@ -8,10 +8,11 @@ import {
   SimpleGrid,
   useColorModeValue
 } from '@chakra-ui/react'
+import { Content } from '@shared/firestore'
 import { GetStaticPaths, GetStaticProps, NextPage } from 'next'
 import NextLink from 'next/link'
 
-import React, { useMemo } from 'react'
+import React from 'react'
 import {
   HContentCard,
   VContentCard
@@ -22,26 +23,19 @@ import { LayoutContainer } from '../../components/Layout'
 
 import { ContentFilter } from '../../content'
 
-const Videos: NextPage<{ tag?: string }> = ({ tag }) => {
-  const content = useMemo(
-    () => (tag ? ContentFilter.content().hasTag(tag) : null),
-    [tag]
-  )
+interface VideoPageProps {
+  tag: string
+  content: Content[]
+  popularTags: string[]
+  membershipContent: Content[]
+}
 
-  const popularTags = useMemo(
-    () =>
-      content
-        ?.popularTags()
-        .filter(([t]) => t !== tag)
-        .slice(0, 10) ?? [],
-    [content, tag]
-  )
-
-  const membershipContent = useMemo(
-    () => content?.clone().premium().first(10),
-    [content]
-  )
-
+const Videos: NextPage<VideoPageProps> = ({
+  tag,
+  content,
+  popularTags,
+  membershipContent
+}) => {
   const tagColor = useColorModeValue('green.400', 'green.200')
 
   if (content == null || tag == null) {
@@ -64,7 +58,12 @@ const Videos: NextPage<{ tag?: string }> = ({ tag }) => {
           <Box borderWidth="1px" borderRadius="lg">
             <ContentCarousel paddingY={7} paddingX={5}>
               {membershipContent.map(s => (
-                <VContentCard key={s.title} flexShrink={0} marginX={2} {...s} />
+                <VContentCard
+                  key={s.title}
+                  flexShrink={0}
+                  marginX={2}
+                  content={s}
+                />
               ))}
             </ContentCarousel>
           </Box>
@@ -76,7 +75,7 @@ const Videos: NextPage<{ tag?: string }> = ({ tag }) => {
           Similar topics
         </Heading>
         <SimpleGrid columns={5} rows={2}>
-          {popularTags.map(([t]) => (
+          {popularTags.map(t => (
             <NextLink key={t} href={`/tag/${t}`}>
               <Button
                 key={t}
@@ -122,7 +121,7 @@ const Videos: NextPage<{ tag?: string }> = ({ tag }) => {
             {content.map((s, i) => (
               <Box key={i}>
                 {i !== 0 && <Divider />}
-                <HContentCard {...s} />
+                <HContentCard content={s} />
               </Box>
             ))}
           </Box>
@@ -133,14 +132,29 @@ const Videos: NextPage<{ tag?: string }> = ({ tag }) => {
 }
 
 export const getStaticPaths: GetStaticPaths = async () => {
-  const tags = Object.keys(ContentFilter.content().tagOccurrences())
+  const content = await ContentFilter.content()
+  const tags = Object.keys(content.tagOccurrences())
   return {
     paths: tags.map(t => ({ params: { tag: t } })),
     fallback: false
   }
 }
 
-export const getStaticProps: GetStaticProps = async ({ params }) => {
-  return { props: params ?? {} }
-}
+export const getStaticProps: GetStaticProps<VideoPageProps, { tag: string }> =
+  async ({ params }) => {
+    const { tag } = params ?? {}
+    if (!tag) throw new Error(`Must provide a tag`)
+
+    const contentAll = await ContentFilter.content()
+    const content = contentAll.hasTag(tag)
+    const popularTags = content
+      ?.popularTags()
+      .map(([t]) => t)
+      .filter(t => t !== tag)
+      .slice(0, 10)
+    const membershipContent = content.clone().premium().get()
+    return {
+      props: { tag, content: content.get(), popularTags, membershipContent }
+    }
+  }
 export default Videos

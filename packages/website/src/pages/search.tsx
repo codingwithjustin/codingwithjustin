@@ -4,22 +4,23 @@ import React, { useMemo } from 'react'
 import { LayoutContainer } from '../components/Layout'
 import { useRouter } from 'next/router'
 import { HContentCard } from '../components/content/ContentCard'
-import { NextPage } from 'next'
+import { GetStaticProps, NextPage } from 'next'
 
 import { ContentFilter } from '../content'
 import { FilterCheckbox, QueryFilter } from '../components/Filter'
+import { Content } from '@shared/firestore'
 
-const Search: NextPage = () => {
+const Search: NextPage<{ content: Content[] }> = ({ content }) => {
   const { query } = useRouter()
   const { string = '', type } = query
 
   const results = useMemo(
     () =>
-      ContentFilter.content()
+      new ContentFilter(content)
         .search(typeof string === 'string' ? string : string?.join(' '))
         .type(type)
         .get(),
-    [string, type]
+    [content, string, type]
   )
 
   return (
@@ -53,7 +54,7 @@ const Search: NextPage = () => {
           {results.map((s, i) => (
             <Box key={i}>
               {i !== 0 && <Divider />}
-              <HContentCard {...s} />
+              <HContentCard content={s} />
             </Box>
           ))}
         </Box>
@@ -61,5 +62,13 @@ const Search: NextPage = () => {
     </LayoutContainer>
   )
 }
+
+export const getStaticProps: GetStaticProps<{ content: Content[] }> =
+  async () => {
+    const content = await ContentFilter.content()
+    return {
+      props: { content: content.get() }
+    }
+  }
 
 export default Search

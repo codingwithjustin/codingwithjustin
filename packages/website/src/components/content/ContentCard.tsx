@@ -15,7 +15,9 @@ import NextLink from 'next/link'
 import { TextMuted } from '../TextMuted'
 import { Content } from '@shared/firestore'
 
-export type ContentCardProps = BoxProps & Content
+export interface ContentCardProps extends BoxProps {
+  content: Content
+}
 
 export const tagColors: Record<string, string> = {
   vue: 'green',
@@ -29,20 +31,24 @@ export const tagColors: Record<string, string> = {
   blog: 'cyan'
 }
 
-const CardTag: React.FC<TagProps> = props => {
+export const ContentTag: React.FC<TagProps & { href?: string }> = props => {
   const getColor = () => {
     const { children } = props
     return typeof children === 'string'
       ? tagColors?.[children.toLocaleLowerCase()]
       : undefined
   }
-  return <Tag m={1} colorScheme={getColor()} {...props}></Tag>
+  return (
+    <NextLink href={props.href ?? `/tag/${props.children}`}>
+      <Tag m={1} colorScheme={getColor()} {...props} cursor="pointer"></Tag>
+    </NextLink>
+  )
 }
 
 const MembershipTag: React.FC<TagProps> = props => (
-  <CardTag colorScheme="green" {...props}>
+  <ContentTag colorScheme="green" {...props}>
     $
-  </CardTag>
+  </ContentTag>
 )
 
 const formatSeconds = (secNum: number) => {
@@ -57,12 +63,16 @@ const formatSeconds = (secNum: number) => {
 }
 
 export const HContentCard: React.FC<ContentCardProps> = props => {
-  const { type, title, description, tags, membershipOnly, slug } = props
+  const { content, ...boxProps } = props
+  const { type, title, description, tags, membershipOnly, slug, publishedAt } =
+    content
+
+  const publishedAtDate = new Date(publishedAt * 1000)
 
   const thumbnail =
-    'youtubeId' in props
-      ? `https://i.ytimg.com/vi/${props.youtubeId}/hqdefault.jpg`
-      : props.thumbnail
+    'youtubeId' in content
+      ? `https://i.ytimg.com/vi/${content.youtubeId}/hqdefault.jpg`
+      : content.thumbnail
   return (
     <NextLink href={`/content/${slug}`}>
       <Flex
@@ -71,13 +81,14 @@ export const HContentCard: React.FC<ContentCardProps> = props => {
         _hover={{ bgColor: useColorModeValue('gray.200', 'whiteAlpha.100') }}
         cursor="pointer"
         p={2}
+        {...boxProps}
       >
         <Box>
           <Box position="relative">
             <AspectRatio w={275} ratio={16 / 9} flexShrink={0}>
               <Image src={thumbnail} rounded="md" />
             </AspectRatio>
-            {'seconds' in props && (
+            {'seconds' in content && (
               <Tag
                 position="absolute"
                 bottom={1}
@@ -88,7 +99,7 @@ export const HContentCard: React.FC<ContentCardProps> = props => {
                 colorScheme="blackAlpha"
                 variant="solid"
               >
-                {formatSeconds(props.seconds)}
+                {formatSeconds(content.seconds)}
               </Tag>
             )}
           </Box>
@@ -100,13 +111,20 @@ export const HContentCard: React.FC<ContentCardProps> = props => {
           <Text noOfLines={3}>{description}</Text>
 
           {membershipOnly && <MembershipTag />}
-          <CardTag ml={0}>{type}</CardTag>
+          <ContentTag ml={0}>{type}</ContentTag>
           {tags?.map((t, i) => (
-            <CardTag key={i} m={1}>
+            <ContentTag key={i} m={1}>
               {t}
-            </CardTag>
+            </ContentTag>
           ))}
-          <TextMuted fontSize="sm">3 days ago • All levels</TextMuted>
+          <TextMuted fontSize="sm">
+            Justin Brooks •{' '}
+            {publishedAtDate.toLocaleDateString('en-US', {
+              month: 'long',
+              day: 'numeric',
+              year: 'numeric'
+            })}
+          </TextMuted>
         </Box>
       </Flex>
     </NextLink>
@@ -114,18 +132,19 @@ export const HContentCard: React.FC<ContentCardProps> = props => {
 }
 
 export const VContentCard: React.FC<ContentCardProps> = props => {
-  const { title, description, tags, membershipOnly, ...rest } = props
+  const { content, ...boxProps } = props
+  const { title, description, tags, membershipOnly } = content
   const thumbnail =
-    'youtubeId' in props
-      ? `https://i.ytimg.com/vi/${props.youtubeId}/maxresdefault.jpg`
-      : props.thumbnail
+    'youtubeId' in content
+      ? `https://i.ytimg.com/vi/${content.youtubeId}/maxresdefault.jpg`
+      : content.thumbnail
   return (
     <Box
       rounded="md"
       bgColor={useColorModeValue('white', 'gray.700')}
       boxShadow="md"
       w={300}
-      {...rest}
+      {...boxProps}
     >
       <Image
         src={thumbnail}
@@ -144,9 +163,9 @@ export const VContentCard: React.FC<ContentCardProps> = props => {
           {membershipOnly && <MembershipTag />}
 
           {tags?.map((t, i) => (
-            <CardTag key={i} m={1}>
+            <ContentTag key={i} m={1}>
               {t}
-            </CardTag>
+            </ContentTag>
           ))}
         </Box>
       </Box>

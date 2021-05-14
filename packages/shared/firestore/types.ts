@@ -23,6 +23,7 @@ export interface User {
 }
 
 export interface BaseContent {
+  id: string
   type: string
   title: string
   slug: string
