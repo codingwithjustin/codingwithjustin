@@ -5,6 +5,7 @@ import {
   Flex,
   Heading,
   Image,
+  LinkBox,
   Tag,
   TagProps,
   Text,
@@ -13,6 +14,7 @@ import {
 import React from 'react'
 import NextLink from 'next/link'
 import { TextMuted } from '../TextMuted'
+import { contentThumbnail, formatPublishedAt } from '../../content'
 import { Content } from '@shared/firestore'
 
 export interface ContentCardProps extends BoxProps {
@@ -64,15 +66,10 @@ const formatSeconds = (secNum: number) => {
 
 export const HContentCard: React.FC<ContentCardProps> = props => {
   const { content, ...boxProps } = props
-  const { type, title, description, tags, membershipOnly, slug, publishedAt } =
-    content
+  const { type, title, description, tags, premium, slug } = content
 
-  const publishedAtDate = new Date(publishedAt * 1000)
+  const thumbnail = contentThumbnail(content)
 
-  const thumbnail =
-    'youtubeId' in content
-      ? `https://i.ytimg.com/vi/${content.youtubeId}/hqdefault.jpg`
-      : content.thumbnail
   return (
     <NextLink href={`/content/${slug}`}>
       <Flex
@@ -86,7 +83,7 @@ export const HContentCard: React.FC<ContentCardProps> = props => {
         <Box>
           <Box position="relative">
             <AspectRatio w={275} ratio={16 / 9} flexShrink={0}>
-              <Image src={thumbnail} rounded="md" />
+              <Image src={thumbnail} alt={title} rounded="md" />
             </AspectRatio>
             {'seconds' in content && (
               <Tag
@@ -110,7 +107,7 @@ export const HContentCard: React.FC<ContentCardProps> = props => {
           </Heading>
           <Text noOfLines={3}>{description}</Text>
 
-          {membershipOnly && <MembershipTag />}
+          {premium && <MembershipTag />}
           <ContentTag ml={0}>{type}</ContentTag>
           {tags?.map((t, i) => (
             <ContentTag key={i} m={1}>
@@ -118,12 +115,7 @@ export const HContentCard: React.FC<ContentCardProps> = props => {
             </ContentTag>
           ))}
           <TextMuted fontSize="sm">
-            Justin Brooks •{' '}
-            {publishedAtDate.toLocaleDateString('en-US', {
-              month: 'long',
-              day: 'numeric',
-              year: 'numeric'
-            })}
+            Justin Brooks • {formatPublishedAt(content)}
           </TextMuted>
         </Box>
       </Flex>
@@ -133,42 +125,43 @@ export const HContentCard: React.FC<ContentCardProps> = props => {
 
 export const VContentCard: React.FC<ContentCardProps> = props => {
   const { content, ...boxProps } = props
-  const { title, description, tags, membershipOnly } = content
-  const thumbnail =
-    'youtubeId' in content
-      ? `https://i.ytimg.com/vi/${content.youtubeId}/maxresdefault.jpg`
-      : content.thumbnail
+  const { title, description, tags, premium, slug } = content
+  const thumbnail = contentThumbnail(content)
   return (
-    <Box
-      rounded="md"
-      bgColor={useColorModeValue('white', 'gray.700')}
-      boxShadow="md"
-      w={300}
-      {...boxProps}
-    >
-      <Image
-        src={thumbnail}
-        w="full"
-        roundedTopLeft="md"
-        roundedTopRight="md"
-      />
-      <Box p={5}>
-        <Text fontSize="lg" mb={1} fontWeight="bold" noOfLines={2}>
-          {title}
-        </Text>
-        <Text noOfLines={2} mb={2}>
-          {description}
-        </Text>
-        <Box>
-          {membershipOnly && <MembershipTag />}
+    <NextLink href={`/content/${slug}`} passHref>
+      <LinkBox
+        rounded="md"
+        bgColor={useColorModeValue('white', 'gray.700')}
+        boxShadow="md"
+        w={300}
+        cursor="pointer"
+        {...boxProps}
+      >
+        <Image
+          src={thumbnail}
+          alt={title}
+          w="full"
+          roundedTopLeft="md"
+          roundedTopRight="md"
+        />
+        <Box p={5}>
+          <Text fontSize="lg" mb={1} fontWeight="bold" noOfLines={2}>
+            {title}
+          </Text>
+          <Text noOfLines={2} mb={2}>
+            {description}
+          </Text>
+          <Box>
+            {premium && <MembershipTag />}
 
-          {tags?.map((t, i) => (
-            <ContentTag key={i} m={1}>
-              {t}
-            </ContentTag>
-          ))}
+            {tags?.map((t, i) => (
+              <ContentTag key={i} m={1}>
+                {t}
+              </ContentTag>
+            ))}
+          </Box>
         </Box>
-      </Box>
-    </Box>
+      </LinkBox>
+    </NextLink>
   )
 }

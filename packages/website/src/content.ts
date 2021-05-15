@@ -1,4 +1,10 @@
-import { collection, getDocs, getFirestore } from '@firebase/firestore'
+import {
+  collection,
+  getDocs,
+  getFirestore,
+  orderBy,
+  query
+} from '@firebase/firestore'
 import { Content, Course, Video } from '@shared/firestore'
 import { matchSorter } from 'match-sorter'
 
@@ -6,7 +12,10 @@ let content: Content[] = []
 
 export const get = async () => {
   if (content.length === 0) {
-    const result = await getDocs<Content>(collection(getFirestore(), 'content'))
+    const col = collection(getFirestore(), 'content')
+    const result = await getDocs<Content>(
+      query(col, orderBy('publishedAt', 'desc'))
+    )
     content = result.docs.map(d => ({ ...d.data(), id: d.id }))
   }
   return content
@@ -59,7 +68,7 @@ export class ContentFilter {
   }
 
   premium() {
-    this.where(c => c.membershipOnly)
+    this.where(c => c.premium)
     return this
   }
 
@@ -111,3 +120,17 @@ export class ContentFilter {
 
 export const isVideo = (a: Content): a is Video => a.type === 'video'
 export const isCourse = (a: Content): a is Course => a.type === 'course'
+
+export const contentThumbnail = (c: Content) =>
+  'youtubeId' in c
+    ? `https://i.ytimg.com/vi/${c.youtubeId}/maxresdefault.jpg`
+    : c.thumbnail
+
+export const url = ({ slug }: Content) => `/content/${slug}`
+
+export const formatPublishedAt = (c: Content) =>
+  new Date(c.publishedAt * 1000).toLocaleDateString('en-US', {
+    month: 'long',
+    day: 'numeric',
+    year: 'numeric'
+  })

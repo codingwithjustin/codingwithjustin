@@ -2,6 +2,7 @@ import {
   Avatar,
   Box,
   Button,
+  ButtonProps,
   Flex,
   FlexProps,
   Heading,
@@ -48,6 +49,16 @@ const UserMenu: React.FC<Omit<MenuProps, 'children'>> = props => {
   )
 }
 
+const NavButton: React.FC<ButtonProps & { href: string }> = props => {
+  const { href, ...buttonProps } = props
+
+  return (
+    <NextLink href={href} passHref>
+      <Button as="a" variant="ghost" {...buttonProps} />
+    </NextLink>
+  )
+}
+
 export const NavBar: React.FC<FlexProps> = props => {
   const { isLoggedIn, isAdmin } = useAuthState()
   return (
@@ -63,23 +74,13 @@ export const NavBar: React.FC<FlexProps> = props => {
         <NextLink href="/">Coding With Justin</NextLink>
       </Heading>
       <Box ml={5}>
-        <NextLink href="/videos" passHref>
-          <Button as="a" variant="ghost">
-            Videos
-          </Button>
-        </NextLink>
-        <Button variant="ghost">Courses</Button>
-        <NextLink href="/pricing" passHref>
-          <Button as="a" variant="ghost">
-            Pricing
-          </Button>
-        </NextLink>
+        <NavButton href="/videos">Videos</NavButton>
+        <NavButton href="/courses">Courses</NavButton>
+        <NavButton href="/pricing">Pricing</NavButton>
         {isAdmin && (
-          <NextLink href="/admin" passHref>
-            <Button as="a" colorScheme="red" variant="ghost">
-              Admin
-            </Button>
-          </NextLink>
+          <NavButton href="/admin" colorScheme="red">
+            Admin
+          </NavButton>
         )}
       </Box>
       <Spacer />

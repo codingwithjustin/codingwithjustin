@@ -26,6 +26,7 @@ import {
   NetworkGraphic,
   SteamingGraphic
 } from '../components/Graphics'
+import { NextSeo } from 'next-seo'
 
 const PricingTitle: React.FC = () => (
   <Box textAlign="center" my={16}>
@@ -91,110 +92,118 @@ const PricingLifetime: React.FC = () => (
 )
 
 const Pricing: NextPage = () => (
-  <LayoutContainer>
-    <PricingTitle />
+  <>
+    <NextSeo
+      title="Pricing"
+      description="Find membership pricing information to access premium content."
+    />
+    <LayoutContainer>
+      <PricingTitle />
 
-    <Flex alignItems="center" position="relative" mb={16}>
-      <PricingMonthly />
-      <PricingAnnually />
-      <PricingLifetime />
-    </Flex>
-
-    <Box as="section" marginY={24}>
-      <Flex alignItems="center">
-        <SteamingGraphic w={400} flexShrink={0} />
-        <Box m={12}>
-          <Heading as="h3" fontSize="6xl" mb={2} lineHeight={1} m={2}>
-            Unlimited access to all{' '}
-            <chakra.span color={useColorModeValue('green.600', 'green.300')}>
-              courses
-            </chakra.span>
-            .
-          </Heading>
-          <TextMuted fontSize="lg" fontWeight="bold" m={2}>
-            Whether you’re a beginner or experienced developer, our
-            comprehensive courses will help you gain the practical skills
-            required as a software developer.
-          </TextMuted>
-
-          <NextLink href="/courses">
-            <Button size="lg" colorScheme="green" m={2}>
-              View Courses <Icon ml={3} as={FaAngleRight} />
-            </Button>
-          </NextLink>
-        </Box>
-      </Flex>
-    </Box>
-
-    <Box as="section" marginY={24}>
-      <Flex alignItems="center">
-        <Box m={12} textAlign="right">
-          <Heading as="h3" fontSize="6xl" mb={2} lineHeight={1} m={2}>
-            Learn with other{' '}
-            <chakra.span color={useColorModeValue('purple.600', 'purple.300')}>
-              developers
-            </chakra.span>
-            .
-          </Heading>
-          <TextMuted fontSize="lg" fontWeight="bold" m={2}>
-            Whether you’re a beginner or experienced developer, our
-            comprehensive courses will help you gain the practical skills
-            required as a software developer.
-          </TextMuted>
-
-          <NextLink href="/discord">
-            <Button size="lg" colorScheme="purple" m={2}>
-              Join Discord <Icon ml={3} as={FaAngleRight} />
-            </Button>
-          </NextLink>
-        </Box>
-
-        <NetworkGraphic w={425} m={5} flexShrink={0} />
-      </Flex>
-    </Box>
-
-    <Box as="section" marginY={24}>
-      <Flex alignItems="center">
-        <DownloadGraphic w={400} m={5} flexShrink={0} />
-        <Box m={12}>
-          <Heading as="h3" fontSize="6xl" mb={2} lineHeight={1} m={2}>
-            <chakra.span color={useColorModeValue('blue.600', 'blue.300')}>
-              Download
-            </chakra.span>{' '}
-            content for offline learning.
-          </Heading>
-          <TextMuted fontSize="lg" fontWeight="bold" m={2}>
-            Whether you’re a beginner or experienced developer, our
-            comprehensive courses will help you gain the practical skills
-            required as a software developer.
-          </TextMuted>
-
-          <NextLink href="/pricing">
-            <Button size="lg" colorScheme="blue" m={2}>
-              Become a member <Icon ml={3} as={FaAngleRight} />
-            </Button>
-          </NextLink>
-        </Box>
+      <Flex alignItems="center" position="relative" mb={16}>
+        <PricingMonthly />
+        <PricingAnnually />
+        <PricingLifetime />
       </Flex>
 
-      {/* <Box as="section" marginY={48}>
+      <Box as="section" marginY={24}>
+        <Flex alignItems="center">
+          <SteamingGraphic w={400} flexShrink={0} />
+          <Box m={12}>
+            <Heading as="h3" fontSize="6xl" mb={2} lineHeight={1} m={2}>
+              Unlimited access to all{' '}
+              <chakra.span color={useColorModeValue('green.600', 'green.300')}>
+                courses
+              </chakra.span>
+              .
+            </Heading>
+            <TextMuted fontSize="lg" fontWeight="bold" m={2}>
+              Whether you’re a beginner or experienced developer, our
+              comprehensive courses will help you gain the practical skills
+              required as a software developer.
+            </TextMuted>
+
+            <NextLink href="/courses">
+              <Button size="lg" colorScheme="green" m={2}>
+                View Courses <Icon ml={3} as={FaAngleRight} />
+              </Button>
+            </NextLink>
+          </Box>
+        </Flex>
+      </Box>
+
+      <Box as="section" marginY={24}>
+        <Flex alignItems="center">
+          <Box m={12} textAlign="right">
+            <Heading as="h3" fontSize="6xl" mb={2} lineHeight={1} m={2}>
+              Learn with other{' '}
+              <chakra.span
+                color={useColorModeValue('purple.600', 'purple.300')}
+              >
+                developers
+              </chakra.span>
+              .
+            </Heading>
+            <TextMuted fontSize="lg" fontWeight="bold" m={2}>
+              Whether you’re a beginner or experienced developer, our
+              comprehensive courses will help you gain the practical skills
+              required as a software developer.
+            </TextMuted>
+
+            <NextLink href="/discord">
+              <Button size="lg" colorScheme="purple" m={2}>
+                Join Discord <Icon ml={3} as={FaAngleRight} />
+              </Button>
+            </NextLink>
+          </Box>
+
+          <NetworkGraphic w={425} m={5} flexShrink={0} />
+        </Flex>
+      </Box>
+
+      <Box as="section" marginY={24}>
+        <Flex alignItems="center">
+          <DownloadGraphic w={400} m={5} flexShrink={0} />
+          <Box m={12}>
+            <Heading as="h3" fontSize="6xl" mb={2} lineHeight={1} m={2}>
+              <chakra.span color={useColorModeValue('blue.600', 'blue.300')}>
+                Download
+              </chakra.span>{' '}
+              content for offline learning.
+            </Heading>
+            <TextMuted fontSize="lg" fontWeight="bold" m={2}>
+              Whether you’re a beginner or experienced developer, our
+              comprehensive courses will help you gain the practical skills
+              required as a software developer.
+            </TextMuted>
+
+            <NextLink href="/pricing">
+              <Button size="lg" colorScheme="blue" m={2}>
+                Become a member <Icon ml={3} as={FaAngleRight} />
+              </Button>
+            </NextLink>
+          </Box>
+        </Flex>
+
+        {/* <Box as="section" marginY={48}>
         <Heading as="h2" size="2xl" textAlign="center" mb={16}>
           See what others have to say
         </Heading>
       </Box> */}
 
-      <Box as="section" marginY={48}>
-        <Heading as="h2" size="2xl" textAlign="center" mb={16}>
-          Become a member!
-        </Heading>
-        <Flex alignItems="center" position="relative" mb={16}>
-          <PricingMonthly />
-          <PricingAnnually />
-          <PricingLifetime />
-        </Flex>
+        <Box as="section" marginY={48}>
+          <Heading as="h2" size="2xl" textAlign="center" mb={16}>
+            Become a member!
+          </Heading>
+          <Flex alignItems="center" position="relative" mb={16}>
+            <PricingMonthly />
+            <PricingAnnually />
+            <PricingLifetime />
+          </Flex>
+        </Box>
       </Box>
-    </Box>
-  </LayoutContainer>
+    </LayoutContainer>
+  </>
 )
 
 export default Pricing

@@ -55,6 +55,7 @@ const BaseContentCreator: React.FC<ContextCreatorProps<Content>> = props => {
         <option value="blog">Blog</option>
       </Select>
       <Input placeholder="Title" onChange={stringHandler('title')} />
+      <Input placeholder="Slug" onChange={stringHandler('slug')} />
       <Textarea
         placeholder="Description"
         onChange={stringHandler('description')}
@@ -74,9 +75,7 @@ const BaseContentCreator: React.FC<ContextCreatorProps<Content>> = props => {
           }))
         }
       />
-      <Checkbox onChange={booleanHandler('membershipOnly')}>
-        Premium Content
-      </Checkbox>
+      <Checkbox onChange={booleanHandler('premium')}>Premium Content</Checkbox>
       <Checkbox onChange={booleanHandler('draft')}>Draft</Checkbox>
     </>
   )

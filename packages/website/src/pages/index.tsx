@@ -186,7 +186,12 @@ const Index: NextPage<ContentTabsProps> = props => {
       <Box as="section" marginY={48}>
         <Flex alignItems="center">
           <Box>
-            <Image rounded="full" src="/headshot.png" w={450} />
+            <Image
+              rounded="full"
+              alt="Justin Brooks"
+              src="/headshot.png"
+              w={450}
+            />
             <Center mt={2}>
               <TwitterButton />
               <LinkedinPersonalButton />

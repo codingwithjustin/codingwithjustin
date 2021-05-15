@@ -1,5 +1,5 @@
-import {AspectRatio, AspectRatioProps} from '@chakra-ui/react';
-import React from 'react';
+import { AspectRatio, AspectRatioProps } from '@chakra-ui/react'
+import React from 'react'
 
 export const YouTubeVideo: React.FC<{ id: string } & AspectRatioProps> = ({
   id,
@@ -13,11 +13,11 @@ export const YouTubeVideo: React.FC<{ id: string } & AspectRatioProps> = ({
         frameBorder="0"
         style={{
           borderTopLeftRadius: 'var(--chakra-radii-md)',
-          borderTopRightRadius: 'var(--chakra-radii-md)',
+          borderTopRightRadius: 'var(--chakra-radii-md)'
         }}
         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
         allowFullScreen
       />
     </AspectRatio>
-  );
-};
+  )
+}

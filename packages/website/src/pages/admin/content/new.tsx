@@ -16,8 +16,7 @@ const AdminIndex: NextPage = () => {
     description: '',
     body: '',
     tags: [],
-    publishedAt: Date.now(),
-    membershipOnly: false
+    publishedAt: Date.now()
   })
 
   const router = useRouter()

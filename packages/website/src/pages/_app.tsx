@@ -6,6 +6,7 @@ import theme from '../theme'
 import { getApp, initializeApp } from 'firebase/app'
 import { MDXProvider } from '@mdx-js/react'
 import { components } from '@/mdx'
+import { DefaultSeo } from 'next-seo'
 
 try {
   getApp()
@@ -26,6 +27,17 @@ const App = ({ Component, pageProps }: AppProps) => {
     <ChakraProvider resetCSS theme={theme}>
       <MDXProvider components={components}>
         <StripeProvider>
+          <DefaultSeo
+            title="Coding with Justin"
+            titleTemplate="%s - Coding with Justin"
+            description="Learning to build fullstack applications."
+            openGraph={{
+              type: 'website',
+              url: 'https://codingwithjustin.com',
+              site_name: 'Coding With Justin'
+            }}
+            twitter={{ handle: '@jsbroks' }}
+          />
           <Component {...pageProps} />
         </StripeProvider>
       </MDXProvider>

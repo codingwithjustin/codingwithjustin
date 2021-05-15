@@ -34,7 +34,7 @@ export interface BaseContent {
   draft?: boolean
   level?: 'beginner' | 'intermediate' | 'advanced'
   publishedAt: number
-  membershipOnly: boolean
+  premium?: boolean
 }
 
 export interface Video extends BaseContent {
