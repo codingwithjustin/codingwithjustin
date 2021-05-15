@@ -1,3 +1,4 @@
+import { useAuthState } from '@/firebase'
 import {
   Box,
   Button,
@@ -19,11 +20,20 @@ import {
   ModalContent,
   Heading,
   ModalBody,
-  ModalCloseButton
+  ModalCloseButton,
+  useRadio,
+  Flex,
+  useRadioGroup,
+  UseRadioProps,
+  Spacer,
+  Icon
 } from '@chakra-ui/react'
 import { CardElement, useElements, useStripe } from '@stripe/react-stripe-js'
 import { StripeError } from '@stripe/stripe-js'
 import React, { FormEventHandler, useState } from 'react'
+
+import { MdRadioButtonChecked, MdRadioButtonUnchecked } from 'react-icons/md'
+import { useMembershipPrices } from './Pricing'
 
 export const CardInput: React.FC = () => {
   const [
@@ -118,9 +128,97 @@ export const CardInput: React.FC = () => {
   )
 }
 
+const SubscriptionOption: React.FC<
+  UseRadioProps & {
+    text: string
+    price?: { value?: number; currency?: string }
+  }
+> = props => {
+  const { state, getInputProps, getCheckboxProps } = useRadio(props)
+  const { isChecked } = state
+  const { price, text } = props
+  const formatter = new Intl.NumberFormat(
+    'en-US',
+    price?.currency
+      ? {
+          style: 'currency',
+          currency: price?.currency
+        }
+      : {}
+  )
+  return (
+    <Box as="label" w="full">
+      <input {...getInputProps()} />
+      <Flex
+        {...getCheckboxProps()}
+        rounded="md"
+        borderWidth="2px"
+        p={3}
+        w="full"
+        alignItems="center"
+        borderColor={isChecked ? 'blue.300' : 'gray.600'}
+        bgColor={isChecked ? 'whiteAlpha.100' : undefined}
+      >
+        {isChecked ? (
+          <Icon as={MdRadioButtonChecked} />
+        ) : (
+          <Icon as={MdRadioButtonUnchecked} />
+        )}
+        <Text ml={2}> {text} </Text>
+        <Spacer />
+        <Box ml={2}>
+          <chakra.span color="blue.200" fontWeight="bold">
+            {price ? formatter.format((price?.value ?? 0) / 100) : 'N / A'}
+          </chakra.span>
+        </Box>
+      </Flex>
+    </Box>
+  )
+}
+
+const SubscriptionRadio: React.FC<{
+  value?: string
+  onChange?: (v: string) => void
+}> = ({ value, onChange }) => {
+  const { monthly, yearly, lifetime } = useMembershipPrices('cad')
+
+  const { getRootProps, getRadioProps } = useRadioGroup({
+    value,
+    name: 'pricing',
+    defaultValue: 'react',
+    onChange
+  })
+
+  return (
+    <Box {...getRootProps()} w="full">
+      <Text mb={2} fontWeight="semibold">
+        Plan
+      </Text>
+      <VStack spacing={2}>
+        <SubscriptionOption
+          {...getRadioProps({ value: 'monthly' })}
+          text="Monthly Membership"
+          price={{ value: monthly?.unit_amount, currency }}
+        />
+        <SubscriptionOption
+          {...getRadioProps({ value: 'yearly' })}
+          text="Yearly Membership"
+          price={{ value: yearly?.unit_amount, currency }}
+        />
+        <SubscriptionOption
+          {...getRadioProps({ value: 'lifetime' })}
+          text="Lifetime Membership"
+          price={{ value: lifetime?.unit_amount, currency }}
+        />
+      </VStack>
+    </Box>
+  )
+}
+
 export const PaymentForm: React.FC<{ planId: string }> = () => {
   const stripe = useStripe()
   const elements = useElements()
+  const { user } = useAuthState()
 
   const [coupon, setCoupon] = useState('')
 
@@ -147,12 +245,17 @@ export const PaymentForm: React.FC<{ planId: string }> = () => {
     }
   }
 
+  if (user == null) {
+    return <Text>You are not logged in!</Text>
+  }
+
   return (
     <chakra.form onSubmit={handleSubmit}>
       <VStack spacing={4}>
+        <SubscriptionRadio></SubscriptionRadio>
         <FormControl>
           <FormLabel>Currently logged in as</FormLabel>
-          <Input readOnly value="jsbroks@gmail.com" />
+          <Input readOnly value={user.email ?? user.uid} />
         </FormControl>
 
         <CardInput />
@@ -189,7 +292,7 @@ export interface PaymentModalProps extends Omit<ModalProps, 'children'> {
 
 export const PaymentModal: React.FC<PaymentModalProps> = props => {
   const {
-    membership: { name, price, planId }
+    membership: { name, planId }
   } = props
   return (
     <Modal blockScrollOnMount={true} size="lg" {...props}>
@@ -198,9 +301,6 @@ export const PaymentModal: React.FC<PaymentModalProps> = props => {
         <ModalCloseButton />
         <ModalBody m={5} py={4}>
           <Heading mb={3}>{name}</Heading>
-          <Text my={3} fontWeight="semibold">
-            Bill Today <chakra.span float="right">{price}</chakra.span>
-          </Text>
           <PaymentForm planId={planId} />
         </ModalBody>
       </ModalContent>

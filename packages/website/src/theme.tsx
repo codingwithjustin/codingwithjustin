@@ -5,7 +5,7 @@ const fonts = { mono: "'Menlo', monospace" }
 
 const theme = extendTheme({
   config: { initialColorMode: 'dark', useSystemColorMode: false },
-  colors: { hint: 'gray.500', black: '#16161D' },
+  colors: { hint: 'gray.500', black: '#16161D', discord: '#5865F2' },
   styles: {
     global: props => ({
       body: {

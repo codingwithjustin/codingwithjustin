@@ -12,7 +12,8 @@ import {
   Flex,
   Icon,
   Image,
-  chakra
+  chakra,
+  Spacer
 } from '@chakra-ui/react'
 import NextLink from 'next/link'
 import { LayoutContainer } from '../components/Layout'
@@ -29,7 +30,7 @@ import {
   FcBusinessman,
   FcTemplate
 } from 'react-icons/fc'
-import { FaAngleRight } from 'react-icons/fa'
+import { FaAngleRight, FaDiscord } from 'react-icons/fa'
 import { ContentTabs, ContentTabsProps } from '@/components/content/ContentTabs'
 import { GetStaticProps, NextPage } from 'next'
 import { TextMuted } from '../components/TextMuted'
@@ -136,6 +137,30 @@ const Index: NextPage<ContentTabsProps> = props => {
           </TextMuted>
         </Box>
         <ContentTabs {...props} />
+      </Box>
+
+      <Box as="section" marginY={28}>
+        <Flex
+          rounded="md"
+          bgColor="discord"
+          p={10}
+          alignItems="center"
+          boxShadow="md"
+          color="white"
+        >
+          <Icon as={FaDiscord} fontSize="6xl" />
+          <Box mx={10}>
+            <Heading fontSize="2xl">Connect with the community</Heading>
+            <Text>
+              Feel free to ask questions, talk about software, and meet new
+              people.
+            </Text>
+          </Box>
+          <Spacer />
+          <Button flexShrink={0} size="lg" py={7} fontWeight="extrabold">
+            Join #CWJ Discord
+          </Button>
+        </Flex>
       </Box>
 
       <Box as="section" marginY={48}>

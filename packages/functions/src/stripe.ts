@@ -38,3 +38,7 @@ export const verifyRequest = (request: functions.Request) => {
   if (typeof sig != 'string') throw new Error('Invalid stripe signature.')
   return stripe.webhooks.constructEvent(request.body, sig, stripeEndpointSecret)
 }
+
+export const getProductPrices = (product: string) => {
+  return stripe.prices.list({ product })
+}

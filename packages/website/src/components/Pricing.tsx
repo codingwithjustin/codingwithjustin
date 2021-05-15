@@ -1,3 +1,4 @@
+import { useAuthState } from '@/firebase'
 import {
   Badge,
   BadgeProps,
@@ -14,13 +15,60 @@ import {
   HeadingProps,
   useDisclosure
 } from '@chakra-ui/react'
-import React, { useContext, useEffect } from 'react'
+import { getFunctions, httpsCallable } from 'firebase/functions'
+import React, { useContext, useEffect, useState } from 'react'
 import { IconType } from 'react-icons'
 
 import { FaCheck } from 'react-icons/fa'
 import { LoginModal } from './Auth'
 import { PaymentModal } from './PaymentForm'
 import { TextMuted } from './TextMuted'
+
+const getProductPrices = httpsCallable<{ product: string }, any>(
+  getFunctions(),
+  'stripeProductPrices'
+)
+
+let cachedPrices: any = null
+export const getMembershipPrices = async () => {
+  if (cachedPrices == null)
+    cachedPrices = await getProductPrices({ product: 'prod_JUEdNpS41zRTQO' })
+  const prices = cachedPrices.data.prices
+  const currencies = groupBy(prices?.data ?? [], (i: any) => i.currency)
+  const monthly = prices?.find(
+    s => s.type === 'recurring' && s.recurring.interval === 'month'
+  )
+  const yearly = prices?.find(
+    s => s.type === 'recurring' && s.recurring.interval === 'year'
+  )
+  const lifetime = prices?.find(s => s.type === 'one_time')
+  return { prices }
+}
+
+const groupBy = <T, K extends keyof any>(list: T[], getKey: (item: T) => K) =>
+  list.reduce((previous, currentItem) => {
+    const group = getKey(currentItem)
+    if (!previous[group]) previous[group] = []
+    previous[group].push(currentItem)
+    return previous
+  }, {} as Record<K, T[]>)
+
+export const useMembershipPrices = (currency: string) => {
+  const [prices, setPrices] = useState<any>()
+  useEffect(() => {
+    getMembershipPrices().then(d => setPrices(d.data.prices))
+  }, [])
+
+  const currencies = groupBy(prices?.data ?? [], (i: any) => i.currency)
+  const monthly = prices?.find(
+    s => s.type === 'recurring' && s.recurring.interval === 'month'
+  )
+  const yearly = prices?.find(
+    s => s.type === 'recurring' && s.recurring.interval === 'year'
+  )
+  const lifetime = prices?.find(s => s.type === 'one_time')
+  return { prices, currencies, monthly, yearly, lifetime }
+}
 
 const PricingContext = React.createContext({
   isPopular: false,
@@ -122,12 +170,11 @@ export const PricingButton: React.FC = ({ children }) => {
     onOpen: onLoginOpen,
     onClose: onLoginClose
   } = useDisclosure()
+  const { user } = useAuthState()
 
   useEffect(() => {
-    if (isOpen) {
-      onLoginOpen()
-    }
-  }, [isOpen, onLoginOpen])
+    if (isOpen && user == null) onLoginOpen()
+  }, [isOpen, user, onLoginOpen])
   return (
     <>
       <Button

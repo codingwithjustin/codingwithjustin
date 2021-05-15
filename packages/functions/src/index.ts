@@ -4,3 +4,4 @@ admin.initializeApp()
 
 export * from './discord'
 export * from './users'
+export * from './payments'
