@@ -31,7 +31,7 @@ const eventHandler: Record<string, (e: Stripe.Event) => Promise<void>> = {
         )
         Firestore.setUserMembershipSubscription(uid, id, status)
       } else {
-        Firestore.setUserMembershipLifetime(uid)
+        Firestore.setUserMembershipLifetime(uid, invoice.id)
       }
     }
   },

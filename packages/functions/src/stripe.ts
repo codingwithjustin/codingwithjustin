@@ -67,18 +67,21 @@ export const createPaymentIntent = (
 export const createPriceInvoice = async (
   customer: string,
   price: string,
-  coupon?: string
+  couponId?: string
 ) => {
   await stripe.invoiceItems.create({ customer, price })
+
   const invoice = await stripe.invoices.create({
     customer,
-    auto_advance: true,
-    coupon
+    auto_advance: false,
+    discounts: couponId ? [{ coupon: couponId }] : []
   })
-  const paidInvoice = await stripe.invoices.pay(invoice.id, {
+
+  const finalizedInvoice = await stripe.invoices.finalizeInvoice(invoice.id, {
     expand: ['payment_intent']
   })
-  return paidInvoice
+
+  return finalizedInvoice
 }
 
 export const isMembershipProductId = (productId: string) => {
@@ -91,3 +94,7 @@ export const isMembershipProductId = (productId: string) => {
 // export const cancelSubscription = (subId: string, immediatly) => {
 //   return stripe.subscriptions.del(subId)
 // }
+
+export const getPromotionCode = (couponId: string) => {
+  return stripe.promotionCodes.retrieve(couponId)
+}

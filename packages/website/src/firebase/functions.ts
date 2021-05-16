@@ -56,3 +56,13 @@ export const getUserSubscription = httpsCallable<
   undefined,
   SubscriptionResponse
 >(getFunctions(), 'stripeGetUserSubscription')
+
+export const createPaymentIntent = httpsCallable<
+  { customerId: string; priceId: string },
+  { invoiceId: string; intentId: string; clientSecret: string }
+>(getFunctions(), 'stripeCreatePaymentIntent')
+
+export const getCouponCode = httpsCallable<{ code: string }, {}>(
+  getFunctions(),
+  'stripeGetCoupon'
+)

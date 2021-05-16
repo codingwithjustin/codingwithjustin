@@ -31,9 +31,12 @@ export const setUserMembershipSubscription = async (
   })
 }
 
-export const setUserMembershipLifetime = async (uid: string) => {
+export const setUserMembershipLifetime = async (
+  uid: string,
+  invoiceId: string
+) => {
   await updateUser(uid, {
-    membership: { type: 'lifetime', status: 'active' }
+    membership: { type: 'lifetime', status: 'active', invoiceId }
   })
 }
 

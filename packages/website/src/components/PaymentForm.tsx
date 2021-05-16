@@ -1,4 +1,9 @@
-import { createStripeSubscription, useAuthState, useUserData } from '@/firebase'
+import {
+  createPaymentIntent,
+  createStripeSubscription,
+  useAuthState,
+  useUserData
+} from '@/firebase'
 import { formatPrice } from '@/stripe'
 import {
   Box,
@@ -248,20 +253,23 @@ export const PaymentForm: React.FC = () => {
     if (selected == null) return
     if (userData?.stripeCustomerId == null) return
 
+    const customerId = userData.stripeCustomerId
+    const priceId = selected.id
+
+    let clientSecret: string
     if (selected.type === 'one_time') {
-      // await stripe.()
-    }
-    if (selected.type === 'recurring') {
+      setProcessing('Creating invoice')
+      const { data } = await createPaymentIntent({ customerId, priceId })
+      clientSecret = data.clientSecret
+    } else {
       setProcessing('Creating subscription')
-      const { data } = await createStripeSubscription({
-        customerId: userData.stripeCustomerId,
-        priceId: selected.id
-      })
+      const { data } = await createStripeSubscription({ customerId, priceId })
+      clientSecret = data.clientSecret
     }
 
     try {
       setProcessing('Verifying card')
-      await stripe.confirmCardPayment(data.clientSecret, {
+      await stripe.confirmCardPayment(clientSecret, {
         payment_method: { card }
       })
       router.push('/settings')

@@ -3,7 +3,7 @@ import Stripe from 'stripe'
 import * as StripeHelper from '../../stripe'
 
 export const stripeCreatePaymentIntent = functions.https.onCall(async data => {
-  const { priceId, customerId } = data
+  const { priceId, customerId, couponId } = data
 
   if (typeof priceId !== 'string') {
     throw new functions.https.HttpsError(
@@ -20,8 +20,13 @@ export const stripeCreatePaymentIntent = functions.https.onCall(async data => {
   }
 
   try {
-    const invoice = await StripeHelper.createPriceInvoice(customerId, priceId)
+    const invoice = await StripeHelper.createPriceInvoice(
+      customerId,
+      priceId,
+      couponId
+    )
     const intent = invoice.payment_intent as Stripe.PaymentIntent
+
     return {
       invoiceId: invoice.id,
       intentId: intent.id,

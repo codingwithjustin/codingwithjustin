@@ -23,6 +23,7 @@ export interface User {
       | 'past_due'
       | 'trialing'
       | 'unpaid'
+    invoiceId?: string
     subscriptionId?: string
   }
 
