@@ -1,3 +1,5 @@
+import './init'
+
 import { doc, DocumentReference, getFirestore } from '@firebase/firestore'
 import {
   getAuth,
@@ -11,12 +13,8 @@ import { useEffect, useState } from 'react'
 import { useAnalytics } from './analytics'
 import { useDocument } from './firestore'
 import { User as UserDocument } from '@shared/firestore'
-import { getFunctions, httpsCallable } from 'firebase/functions'
 import { useRouter } from 'next/router'
-const setCustomUserClaims = httpsCallable<unknown, { refetch: boolean }>(
-  getFunctions(),
-  'userCustomClaims'
-)
+import { setCustomUserClaims } from './functions'
 
 export const useSignIn = () => {
   const auth = getAuth()

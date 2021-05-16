@@ -14,9 +14,16 @@ export interface User {
   joinedAt: Date
 
   membership?: {
-    status: 'active' | 'lifetime'
-    sku: string
-    joinedAt: Date
+    type: 'lifetime' | 'subscription'
+    status:
+      | 'active'
+      | 'canceled'
+      | 'incomplete'
+      | 'incomplete_expired'
+      | 'past_due'
+      | 'trialing'
+      | 'unpaid'
+    subscriptionId?: string
   }
 
   stripeCustomerId?: string

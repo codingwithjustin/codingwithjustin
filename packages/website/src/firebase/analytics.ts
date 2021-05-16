@@ -1,3 +1,5 @@
+import './init'
+
 import {
   AnalyticsCallOptions,
   getAnalytics,

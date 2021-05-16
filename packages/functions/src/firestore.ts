@@ -1,7 +1,7 @@
 import * as admin from 'firebase-admin'
 import { UserRecord } from 'firebase-functions/lib/providers/auth'
 import { User } from '@shared/firestore'
-
+import StripeSDK from 'stripe'
 export const db = admin.firestore()
 
 export const createUser = async (user: UserRecord) => {
@@ -20,6 +20,22 @@ export const createUser = async (user: UserRecord) => {
 
 export const updateUser = (uid: string, data: Partial<User>) =>
   db.collection('users').doc(uid).set(data, { merge: true })
+
+export const setUserMembershipSubscription = async (
+  uid: string,
+  subscriptionId: string,
+  status: StripeSDK.Subscription.Status
+) => {
+  await updateUser(uid, {
+    membership: { type: 'subscription', status, subscriptionId }
+  })
+}
+
+export const setUserMembershipLifetime = async (uid: string) => {
+  await updateUser(uid, {
+    membership: { type: 'lifetime', status: 'active' }
+  })
+}
 
 export const getUser = (uid: string) =>
   db

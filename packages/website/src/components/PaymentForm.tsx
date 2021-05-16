@@ -1,4 +1,5 @@
-import { useAuthState } from '@/firebase'
+import { createStripeSubscription, useAuthState, useUserData } from '@/firebase'
+import { formatPrice } from '@/stripe'
 import {
   Box,
   Button,
@@ -26,14 +27,16 @@ import {
   useRadioGroup,
   UseRadioProps,
   Spacer,
-  Icon
+  Icon,
+  Select
 } from '@chakra-ui/react'
 import { CardElement, useElements, useStripe } from '@stripe/react-stripe-js'
 import { StripeError } from '@stripe/stripe-js'
+import { useRouter } from 'next/router'
 import React, { FormEventHandler, useState } from 'react'
 
 import { MdRadioButtonChecked, MdRadioButtonUnchecked } from 'react-icons/md'
-import { useMembershipPrices } from './Pricing'
+import { useCheckout, useCheckoutMembership } from './Pricing'
 
 export const CardInput: React.FC = () => {
   const [
@@ -131,23 +134,15 @@ export const CardInput: React.FC = () => {
 const SubscriptionOption: React.FC<
   UseRadioProps & {
     text: string
-    price?: { value?: number; currency?: string }
+    amount?: string
   }
 > = props => {
   const { state, getInputProps, getCheckboxProps } = useRadio(props)
   const { isChecked } = state
-  const { price, text } = props
-  const formatter = new Intl.NumberFormat(
-    'en-US',
-    price?.currency
-      ? {
-          style: 'currency',
-          currency: price?.currency
-        }
-      : {}
-  )
+  const { amount, text } = props
+
   return (
-    <Box as="label" w="full">
+    <Box as="label" w="full" cursor="pointer">
       <input {...getInputProps()} />
       <Flex
         {...getCheckboxProps()}
@@ -168,7 +163,7 @@ const SubscriptionOption: React.FC<
         <Spacer />
         <Box ml={2}>
           <chakra.span color="blue.200" fontWeight="bold">
-            {price ? formatter.format((price?.value ?? 0) / 100) : 'N / A'}
+            {amount ?? 'N / A'}
           </chakra.span>
         </Box>
       </Flex>
@@ -179,9 +174,9 @@ const SubscriptionOption: React.FC<
 const SubscriptionRadio: React.FC<{
   value?: string
   onChange?: (v: string) => void
-}> = ({ value, onChange }) => {
-  const { monthly, yearly, lifetime } = useMembershipPrices('cad')
-
+  currency?: string
+  onCurrencyChange?: (v: string) => void
+}> = ({ value, onChange, currency, onCurrencyChange }) => {
   const { getRootProps, getRadioProps } = useRadioGroup({
     value,
     name: 'pricing',
@@ -189,59 +184,91 @@ const SubscriptionRadio: React.FC<{
     onChange
   })
 
+  const { currencies } = useCheckout()
+  const { monthly, yearly, lifetime } = useCheckoutMembership()
+
   return (
     <Box {...getRootProps()} w="full">
-      <Text mb={2} fontWeight="semibold">
-        Plan
-      </Text>
+      <Flex alignItems="center" mb={2}>
+        <Text fontWeight="semibold">Plan</Text>
+        <Spacer />
+        <Select
+          size="xs"
+          w={75}
+          value={currency}
+          onChange={e => onCurrencyChange?.(e.target.value)}
+        >
+          {currencies?.map(c => (
+            <option key={c} value={c}>
+              {c.toUpperCase()}
+            </option>
+          ))}
+        </Select>
+      </Flex>
+
       <VStack spacing={2}>
         <SubscriptionOption
           {...getRadioProps({ value: 'monthly' })}
           text="Monthly Membership"
-          price={{ value: monthly?.unit_amount, currency }}
+          amount={formatPrice(monthly)}
         />
         <SubscriptionOption
           {...getRadioProps({ value: 'yearly' })}
           text="Yearly Membership"
-          price={{ value: yearly?.unit_amount, currency }}
+          amount={formatPrice(yearly)}
         />
         <SubscriptionOption
           {...getRadioProps({ value: 'lifetime' })}
           text="Lifetime Membership"
-          price={{ value: lifetime?.unit_amount, currency }}
+          amount={formatPrice(lifetime)}
         />
       </VStack>
     </Box>
   )
 }
 
-export const PaymentForm: React.FC<{ planId: string }> = () => {
+export const PaymentForm: React.FC = () => {
   const stripe = useStripe()
   const elements = useElements()
   const { user } = useAuthState()
+  const userData = useUserData()
 
+  const [processing, setProcessing] = useState('')
   const [coupon, setCoupon] = useState('')
+  const [errorMessage, setErrorMessage] = useState('')
+  const { term, setTerm, currency, setCurrency } = useCheckout()
+  const { selected } = useCheckoutMembership()
+  const router = useRouter()
 
   const handleSubmit: FormEventHandler<HTMLFormElement> = async event => {
     event.preventDefault()
 
     const card = elements?.getElement(CardElement)
-    if (stripe == null || card == null) {
-      return
+    if (stripe == null || card == null) return
+    if (selected == null) return
+    if (userData?.stripeCustomerId == null) return
+
+    if (selected.type === 'one_time') {
+      // await stripe.()
+    }
+    if (selected.type === 'recurring') {
+      setProcessing('Creating subscription')
+      const { data } = await createStripeSubscription({
+        customerId: userData.stripeCustomerId,
+        priceId: selected.id
+      })
     }
 
-    const { createPaymentMethod } = stripe
-    const { error, paymentMethod } = await createPaymentMethod({
-      type: 'card',
-      card
-    })
-
-    if (error) {
-      // eslint-disable-next-line no-console
-      console.log('[error]', error)
-    } else {
-      // eslint-disable-next-line no-console
-      console.log('[PaymentMethod]', paymentMethod)
+    try {
+      setProcessing('Verifying card')
+      await stripe.confirmCardPayment(data.clientSecret, {
+        payment_method: { card }
+      })
+      router.push('/settings')
+    } catch (ex) {
+      setErrorMessage(ex.message)
+    } finally {
+      setProcessing('')
     }
   }
 
@@ -252,7 +279,12 @@ export const PaymentForm: React.FC<{ planId: string }> = () => {
   return (
     <chakra.form onSubmit={handleSubmit}>
       <VStack spacing={4}>
-        <SubscriptionRadio></SubscriptionRadio>
+        <SubscriptionRadio
+          value={term}
+          onChange={v => setTerm(v)}
+          currency={currency}
+          onCurrencyChange={setCurrency}
+        />
         <FormControl>
           <FormLabel>Currently logged in as</FormLabel>
           <Input readOnly value={user.email ?? user.uid} />
@@ -269,10 +301,18 @@ export const PaymentForm: React.FC<{ planId: string }> = () => {
           />
         </FormControl>
 
-        <FormControl>
-          <Button type="submit" size="lg" isFullWidth colorScheme="green">
-            Start Learning Now
+        <FormControl isInvalid={errorMessage.length !== 0}>
+          <Button
+            type="submit"
+            size="lg"
+            isFullWidth
+            colorScheme="green"
+            isLoading={processing.length > 0}
+            loadingText={processing}
+          >
+            Pay
           </Button>
+          <FormErrorMessage>{errorMessage}</FormErrorMessage>
           <FormHelperText fontSize="sm" mb={2}>
             I agree to the Terms of Use and Privacy Policy
           </FormHelperText>
@@ -282,26 +322,17 @@ export const PaymentForm: React.FC<{ planId: string }> = () => {
   )
 }
 
-export interface PaymentModalProps extends Omit<ModalProps, 'children'> {
-  membership: {
-    planId: string
-    name: string
-    price: string
-  }
-}
+export interface PaymentModalProps extends Omit<ModalProps, 'children'> {}
 
 export const PaymentModal: React.FC<PaymentModalProps> = props => {
-  const {
-    membership: { name, planId }
-  } = props
   return (
     <Modal blockScrollOnMount={true} size="lg" {...props}>
       <ModalOverlay />
       <ModalContent>
         <ModalCloseButton />
         <ModalBody m={5} py={4}>
-          <Heading mb={3}>{name}</Heading>
-          <PaymentForm planId={planId} />
+          <Heading mb={3}>Checkout</Heading>
+          <PaymentForm />
         </ModalBody>
       </ModalContent>
     </Modal>

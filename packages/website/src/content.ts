@@ -7,6 +7,7 @@ import {
 } from '@firebase/firestore'
 import { Content, Course, Video } from '@shared/firestore'
 import { matchSorter } from 'match-sorter'
+import { formatTimestamp } from './utils'
 
 let content: Content[] = []
 
@@ -128,9 +129,4 @@ export const contentThumbnail = (c: Content) =>
 
 export const url = ({ slug }: Content) => `/content/${slug}`
 
-export const formatPublishedAt = (c: Content) =>
-  new Date(c.publishedAt * 1000).toLocaleDateString('en-US', {
-    month: 'long',
-    day: 'numeric',
-    year: 'numeric'
-  })
+export const formatPublishedAt = (c: Content) => formatTimestamp(c.publishedAt)

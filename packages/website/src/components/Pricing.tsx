@@ -1,4 +1,5 @@
-import { useAuthState } from '@/firebase'
+import { Price, useAuthState } from '@/firebase'
+import { groupBy } from '@/utils'
 import {
   Badge,
   BadgeProps,
@@ -15,8 +16,7 @@ import {
   HeadingProps,
   useDisclosure
 } from '@chakra-ui/react'
-import { getFunctions, httpsCallable } from 'firebase/functions'
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useContext, useEffect } from 'react'
 import { IconType } from 'react-icons'
 
 import { FaCheck } from 'react-icons/fa'
@@ -24,50 +24,46 @@ import { LoginModal } from './Auth'
 import { PaymentModal } from './PaymentForm'
 import { TextMuted } from './TextMuted'
 
-const getProductPrices = httpsCallable<{ product: string }, any>(
-  getFunctions(),
-  'stripeProductPrices'
-)
+export const CheckoutContext = React.createContext<{
+  prices: Price[]
+  term: string
+  setTerm: (c: string) => void
+  currency: string
+  setCurrency: (c: string) => void
+}>({
+  prices: [],
+  term: 'monthly',
+  setTerm: () => {},
+  currency: 'usd',
+  setCurrency: () => {}
+})
 
-let cachedPrices: any = null
-export const getMembershipPrices = async () => {
-  if (cachedPrices == null)
-    cachedPrices = await getProductPrices({ product: 'prod_JUEdNpS41zRTQO' })
-  const prices = cachedPrices.data.prices
-  const currencies = groupBy(prices?.data ?? [], (i: any) => i.currency)
-  const monthly = prices?.find(
-    s => s.type === 'recurring' && s.recurring.interval === 'month'
-  )
-  const yearly = prices?.find(
-    s => s.type === 'recurring' && s.recurring.interval === 'year'
-  )
-  const lifetime = prices?.find(s => s.type === 'one_time')
-  return { prices }
+export const useCheckout = () => {
+  const ctx = useContext(CheckoutContext)
+  const currencies = Object.keys(groupBy(ctx.prices, i => i.currency))
+  return { ...ctx, currencies }
 }
 
-const groupBy = <T, K extends keyof any>(list: T[], getKey: (item: T) => K) =>
-  list.reduce((previous, currentItem) => {
-    const group = getKey(currentItem)
-    if (!previous[group]) previous[group] = []
-    previous[group].push(currentItem)
-    return previous
-  }, {} as Record<K, T[]>)
-
-export const useMembershipPrices = (currency: string) => {
-  const [prices, setPrices] = useState<any>()
-  useEffect(() => {
-    getMembershipPrices().then(d => setPrices(d.data.prices))
-  }, [])
-
-  const currencies = groupBy(prices?.data ?? [], (i: any) => i.currency)
-  const monthly = prices?.find(
-    s => s.type === 'recurring' && s.recurring.interval === 'month'
+export const useCheckoutMembership = () => {
+  const { prices, currency, term } = useCheckout()
+  const monthly = prices.find(
+    s =>
+      s.type === 'recurring' &&
+      s.recurring?.interval === 'month' &&
+      s.currency === currency
   )
-  const yearly = prices?.find(
-    s => s.type === 'recurring' && s.recurring.interval === 'year'
+  const yearly = prices.find(
+    s =>
+      s.type === 'recurring' &&
+      s.recurring?.interval === 'year' &&
+      s.currency === currency
   )
-  const lifetime = prices?.find(s => s.type === 'one_time')
-  return { prices, currencies, monthly, yearly, lifetime }
+  const lifetime = prices.find(
+    s => s.type === 'one_time' && s.currency === currency
+  )
+  const selected =
+    term === 'monthly' ? monthly : term === 'yearly' ? yearly : lifetime
+  return { monthly, yearly, lifetime, selected }
 }
 
 const PricingContext = React.createContext({
@@ -162,8 +158,12 @@ export const PricingFeatures: React.FC<PricingFeaturesProps> = props => {
   )
 }
 
-export const PricingButton: React.FC = ({ children }) => {
+export const PricingButton: React.FC<{ term: string }> = ({
+  term,
+  children
+}) => {
   const { isPopular, colorScheme } = useContext(PricingContext)
+  const { setTerm } = useCheckout()
   const { isOpen, onOpen, onClose } = useDisclosure()
   const {
     isOpen: isLoginOpen,
@@ -183,7 +183,10 @@ export const PricingButton: React.FC = ({ children }) => {
         letterSpacing="wide"
         isFullWidth
         colorScheme={isPopular ? colorScheme : undefined}
-        onClick={onOpen}
+        onClick={() => {
+          setTerm(term)
+          onOpen()
+        }}
       >
         {children}
       </Button>
@@ -193,15 +196,7 @@ export const PricingButton: React.FC = ({ children }) => {
         onClose={onLoginClose}
         title="Login Required"
       />
-      <PaymentModal
-        isOpen={isOpen}
-        onClose={onClose}
-        membership={{
-          name: 'Lifetime Membership',
-          price: '$168.00',
-          planId: 'test'
-        }}
-      />
+      <PaymentModal isOpen={isOpen} onClose={onClose} />
     </>
   )
 }

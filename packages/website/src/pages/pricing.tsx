@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import {
   Flex,
   Heading,
@@ -6,13 +6,15 @@ import {
   chakra,
   Box,
   Button,
-  Icon
+  Icon,
+  Center
 } from '@chakra-ui/react'
 
-import { NextPage } from 'next'
+import { GetStaticProps, NextPage } from 'next'
 import NextLink from 'next/link'
 import { LayoutContainer } from '../components/Layout'
 import {
+  CheckoutContext,
   PricingButton,
   PricingCard,
   PricingFeatures,
@@ -27,6 +29,9 @@ import {
   SteamingGraphic
 } from '../components/Graphics'
 import { NextSeo } from 'next-seo'
+import { Price, useUserData } from '@/firebase'
+import { getMembershipPrices } from '@/stripe'
+import { useRouter } from 'next/router'
 
 const PricingTitle: React.FC = () => (
   <Box textAlign="center" my={16}>
@@ -48,7 +53,7 @@ const PricingMonthly: React.FC = () => (
         'Course completion certificates'
       ]}
     />
-    <PricingButton>Start learning</PricingButton>
+    <PricingButton term="monthly">Start learning</PricingButton>
   </PricingCard>
 )
 
@@ -72,7 +77,7 @@ const PricingAnnually: React.FC = () => (
         </span>
       ]}
     />
-    <PricingButton>Start learning</PricingButton>
+    <PricingButton term="yearly">Start learning</PricingButton>
   </PricingCard>
 )
 
@@ -87,123 +92,145 @@ const PricingLifetime: React.FC = () => (
         'Access to all future courses'
       ]}
     />
-    <PricingButton>Start learning</PricingButton>
+    <PricingButton term="lifetime">Start learning</PricingButton>
   </PricingCard>
 )
 
-const Pricing: NextPage = () => (
-  <>
-    <NextSeo
-      title="Pricing"
-      description="Find membership pricing information to access premium content."
-    />
-    <LayoutContainer>
-      <PricingTitle />
+const Pricing: NextPage<{ prices: Price[] }> = ({ prices }) => {
+  const [currency, setCurrency] = useState('usd')
+  const [term, setTerm] = useState('monthly')
 
-      <Flex alignItems="center" position="relative" mb={16}>
-        <PricingMonthly />
-        <PricingAnnually />
-        <PricingLifetime />
-      </Flex>
+  const router = useRouter()
+  const userData = useUserData()
+  useEffect(() => {
+    if (userData?.membership) router.push('/settings')
+  }, [userData, router])
 
-      <Box as="section" marginY={24}>
-        <Flex alignItems="center">
-          <SteamingGraphic w={400} flexShrink={0} />
-          <Box m={12}>
-            <Heading as="h3" fontSize="6xl" mb={2} lineHeight={1} m={2}>
-              Unlimited access to all{' '}
-              <chakra.span color={useColorModeValue('green.600', 'green.300')}>
-                courses
-              </chakra.span>
-              .
-            </Heading>
-            <TextMuted fontSize="lg" fontWeight="bold" m={2}>
-              Whether you’re a beginner or experienced developer, our
-              comprehensive courses will help you gain the practical skills
-              required as a software developer.
-            </TextMuted>
+  return (
+    <>
+      <NextSeo
+        title="Pricing"
+        description="Find membership pricing information to access premium content."
+      />
+      <LayoutContainer>
+        <PricingTitle />
 
-            <NextLink href="/courses">
-              <Button size="lg" colorScheme="green" m={2}>
-                View Courses <Icon ml={3} as={FaAngleRight} />
-              </Button>
-            </NextLink>
-          </Box>
-        </Flex>
-      </Box>
-
-      <Box as="section" marginY={24}>
-        <Flex alignItems="center">
-          <Box m={12} textAlign="right">
-            <Heading as="h3" fontSize="6xl" mb={2} lineHeight={1} m={2}>
-              Learn with other{' '}
-              <chakra.span
-                color={useColorModeValue('purple.600', 'purple.300')}
-              >
-                developers
-              </chakra.span>
-              .
-            </Heading>
-            <TextMuted fontSize="lg" fontWeight="bold" m={2}>
-              Whether you’re a beginner or experienced developer, our
-              comprehensive courses will help you gain the practical skills
-              required as a software developer.
-            </TextMuted>
-
-            <NextLink href="/discord">
-              <Button size="lg" colorScheme="purple" m={2}>
-                Join Discord <Icon ml={3} as={FaAngleRight} />
-              </Button>
-            </NextLink>
-          </Box>
-
-          <NetworkGraphic w={425} m={5} flexShrink={0} />
-        </Flex>
-      </Box>
-
-      <Box as="section" marginY={24}>
-        <Flex alignItems="center">
-          <DownloadGraphic w={400} m={5} flexShrink={0} />
-          <Box m={12}>
-            <Heading as="h3" fontSize="6xl" mb={2} lineHeight={1} m={2}>
-              <chakra.span color={useColorModeValue('blue.600', 'blue.300')}>
-                Download
-              </chakra.span>{' '}
-              content for offline learning.
-            </Heading>
-            <TextMuted fontSize="lg" fontWeight="bold" m={2}>
-              Whether you’re a beginner or experienced developer, our
-              comprehensive courses will help you gain the practical skills
-              required as a software developer.
-            </TextMuted>
-
-            <NextLink href="/pricing">
-              <Button size="lg" colorScheme="blue" m={2}>
-                Become a member <Icon ml={3} as={FaAngleRight} />
-              </Button>
-            </NextLink>
-          </Box>
-        </Flex>
-
-        {/* <Box as="section" marginY={48}>
-        <Heading as="h2" size="2xl" textAlign="center" mb={16}>
-          See what others have to say
-        </Heading>
-      </Box> */}
-
-        <Box as="section" marginY={48}>
-          <Heading as="h2" size="2xl" textAlign="center" mb={16}>
-            Become a member!
-          </Heading>
-          <Flex alignItems="center" position="relative" mb={16}>
+        <CheckoutContext.Provider
+          value={{ prices, currency, setCurrency, term, setTerm }}
+        >
+          <Flex alignItems="center" position="relative" mb={5}>
             <PricingMonthly />
             <PricingAnnually />
             <PricingLifetime />
           </Flex>
+          <Center mb={16}>
+            <TextMuted fontSize="xs">
+              * Price above is in USD. Click &quot;Start Learning&quot; to view
+              prices in other currencies.
+            </TextMuted>
+          </Center>
+        </CheckoutContext.Provider>
+
+        <Box as="section" marginY={24}>
+          <Flex alignItems="center">
+            <SteamingGraphic w={400} flexShrink={0} />
+            <Box m={12}>
+              <Heading as="h3" fontSize="6xl" mb={2} lineHeight={1} m={2}>
+                Unlimited access to all{' '}
+                <chakra.span
+                  color={useColorModeValue('green.600', 'green.300')}
+                >
+                  courses
+                </chakra.span>
+                .
+              </Heading>
+              <TextMuted fontSize="lg" fontWeight="bold" m={2}>
+                Whether you’re a beginner or experienced developer, ou
+                comprehensive courses will help you gain the practical skills
+                required as a software developer.
+              </TextMuted>
+
+              <NextLink href="/courses">
+                <Button size="lg" colorScheme="green" m={2}>
+                  View Courses <Icon ml={3} as={FaAngleRight} />
+                </Button>
+              </NextLink>
+            </Box>
+          </Flex>
         </Box>
-      </Box>
-    </LayoutContainer>
-  </>
-)
+
+        <Box as="section" marginY={24}>
+          <Flex alignItems="center">
+            <Box m={12} textAlign="right">
+              <Heading as="h3" fontSize="6xl" mb={2} lineHeight={1} m={2}>
+                Learn with other{' '}
+                <chakra.span
+                  color={useColorModeValue('purple.600', 'purple.300')}
+                >
+                  developers
+                </chakra.span>
+                .
+              </Heading>
+              <TextMuted fontSize="lg" fontWeight="bold" m={2}>
+                Whether you’re a beginner or experienced developer, ou
+                comprehensive courses will help you gain the practical skills
+                required as a software developer.
+              </TextMuted>
+
+              <NextLink href="/discord">
+                <Button size="lg" colorScheme="purple" m={2}>
+                  Join Discord <Icon ml={3} as={FaAngleRight} />
+                </Button>
+              </NextLink>
+            </Box>
+
+            <NetworkGraphic w={425} m={5} flexShrink={0} />
+          </Flex>
+        </Box>
+
+        <Box as="section" marginY={24}>
+          <Flex alignItems="center">
+            <DownloadGraphic w={400} m={5} flexShrink={0} />
+            <Box m={12}>
+              <Heading as="h3" fontSize="6xl" mb={2} lineHeight={1} m={2}>
+                <chakra.span color={useColorModeValue('blue.600', 'blue.300')}>
+                  Download
+                </chakra.span>{' '}
+                content for offline learning.
+              </Heading>
+              <TextMuted fontSize="lg" fontWeight="bold" m={2}>
+                Whether you’re a beginner or experienced developer, ou
+                comprehensive courses will help you gain the practical skills
+                required as a software developer.
+              </TextMuted>
+
+              <NextLink href="/pricing">
+                <Button size="lg" colorScheme="blue" m={2}>
+                  Become a member <Icon ml={3} as={FaAngleRight} />
+                </Button>
+              </NextLink>
+            </Box>
+          </Flex>
+
+          <Box as="section" marginY={48}>
+            <Heading as="h2" size="2xl" textAlign="center" mb={16}>
+              Become a member!
+            </Heading>
+            <Flex alignItems="center" position="relative" mb={16}>
+              <PricingMonthly />
+              <PricingAnnually />
+              <PricingLifetime />
+            </Flex>
+          </Box>
+        </Box>
+      </LayoutContainer>
+    </>
+  )
+}
+
+export const getStaticProps: GetStaticProps<{ prices: Price[] }> = async () => {
+  const prices = await getMembershipPrices()
+  return { props: { prices } }
+}
 
 export default Pricing
