@@ -13,8 +13,7 @@ import {
   Icon,
   Image,
   chakra,
-  Spacer,
-  VisuallyHidden
+  Spacer
 } from '@chakra-ui/react'
 import NextLink from 'next/link'
 import { LayoutContainer } from '../components/Layout'
@@ -52,14 +51,15 @@ const AnimateText = ({ value }: { value: [string, string] }) => {
   return (
     <AnimatePresence exitBeforeEnter>
       <MotionSpan
+        position="relative"
         display="inline"
         zIndex={10}
         color={`${value[1]}.400`}
         key={value[0]}
         transition="easeInOut"
-        initial={{ opacity: 0, x: -20 }}
-        animate={{ opacity: 1, x: 0 }}
-        exit={{ opacity: 0, y: 20 }}
+        initial={{ opacity: 0, top: -10, scale: 0.95 }}
+        animate={{ opacity: 1, top: 0, scale: 1 }}
+        exit={{ opacity: 0, top: 10, scale: 0.95 }}
       >
         {value[0]}
       </MotionSpan>
@@ -68,6 +68,7 @@ const AnimateText = ({ value }: { value: [string, string] }) => {
 }
 
 const Hero: React.FC = () => {
+  const switchTime = 5000
   const words: Array<[string, string]> = [
     ['design', 'green'],
     ['build', 'teal'],
@@ -76,7 +77,7 @@ const Hero: React.FC = () => {
 
   const [index, setIndex] = useState(0)
   useEffect(() => {
-    const interval = setInterval(() => setIndex(index => index + 1), 1000)
+    const interval = setInterval(() => setIndex(index => index + 1), switchTime)
     return () => clearInterval(interval)
   }, [])
 
@@ -100,21 +101,26 @@ const Hero: React.FC = () => {
         m={{ base: 5, md: 0 }}
       />
       <Box
-        top={{ md: '47%' }}
-        left={{ md: '42%' }}
-        maxW={550}
+        top="47%"
+        left="42%"
         position={{ base: 'relative', md: 'absolute' }}
         marginTop={{ base: 5, md: 0 }}
       >
-        <Heading as="h1" fontSize={{ base: '4xl', sm: '6xl', lg: '5xl' }}>
-          Learn to
-          <br />
-          <AnimateText value={words[index % words.length]} />
+        <Heading
+          as="h1"
+          w={{ base: 'inherit', md: 400, lg: 'inherit' }}
+          fontSize={{ base: '4xl', sm: '6xl', md: '5xl' }}
+        >
+          Learn to <AnimateText value={words[index % words.length]} />
           <br />
           fullstack {headerEnding}.
         </Heading>
         <SearchInput
-          inputGroup={{ size: 'lg', mt: 5 }}
+          inputGroup={{
+            size: 'lg',
+            mt: 5,
+            w: { base: 'inherit', sm: 450, md: 'inherit' }
+          }}
           input={{
             placeholder: 'What do you want to learn?',
             borderColor: `${color}.400`
