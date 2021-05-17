@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import {
   Box,
   Center,
@@ -13,7 +13,8 @@ import {
   Icon,
   Image,
   chakra,
-  Spacer
+  Spacer,
+  VisuallyHidden
 } from '@chakra-ui/react'
 import NextLink from 'next/link'
 import { LayoutContainer } from '../components/Layout'
@@ -43,41 +44,90 @@ import {
   YoutubeButton
 } from '../components/SocialMedia'
 import { ContentFilter } from '@/content'
+import { AnimatePresence, motion } from 'framer-motion'
+
+const MotionSpan = chakra(motion.div)
+
+const AnimateText = ({ value }: { value: [string, string] }) => {
+  return (
+    <AnimatePresence exitBeforeEnter>
+      <MotionSpan
+        display="inline"
+        zIndex={10}
+        color={`${value[1]}.400`}
+        key={value[0]}
+        transition="easeInOut"
+        initial={{ opacity: 0, x: -20 }}
+        animate={{ opacity: 1, x: 0 }}
+        exit={{ opacity: 0, y: 20 }}
+      >
+        {value[0]}
+      </MotionSpan>
+    </AnimatePresence>
+  )
+}
 
 const Hero: React.FC = () => {
-  const header = useBreakpointValue({
-    base: 'Learn to build fullstack apps.',
-    md: 'Learn to build fullstack applications.'
+  const words: Array<[string, string]> = [
+    ['design', 'green'],
+    ['build', 'teal'],
+    ['deploy', 'blue']
+  ]
+
+  const [index, setIndex] = useState(0)
+  useEffect(() => {
+    const interval = setInterval(() => setIndex(index => index + 1), 1000)
+    return () => clearInterval(interval)
+  }, [])
+
+  const color = words[index % words.length][1]
+
+  const headerEnding = useBreakpointValue({
+    base: 'apps',
+    lg: 'applications'
   })
-  const showGraphic = useBreakpointValue({ base: false, md: true })
   return (
-    <Center position="relative">
-      {showGraphic && <ProgressGraphic w="4xl" />}
+    <Flex
+      position="relative"
+      direction={{ base: 'column', md: 'row' }}
+      alignItems="center"
+      textAlign={{ base: 'center', md: 'left' }}
+    >
+      <ProgressGraphic
+        color={color}
+        w={{ base: 'inherit', md: '4xl' }}
+        maxW={{ base: 'xs', md: '4xl' }}
+        m={{ base: 5, md: 0 }}
+      />
       <Box
         top={{ md: '47%' }}
         left={{ md: '42%' }}
         maxW={550}
-        position={{ sm: 'relative', md: 'absolute' }}
-        marginTop={0}
+        position={{ base: 'relative', md: 'absolute' }}
+        marginTop={{ base: 5, md: 0 }}
       >
-        <Heading as="h1" fontSize={{ base: '4xl', lg: '5xl' }}>
-          {header}
+        <Heading as="h1" fontSize={{ base: '4xl', sm: '6xl', lg: '5xl' }}>
+          Learn to
+          <br />
+          <AnimateText value={words[index % words.length]} />
+          <br />
+          fullstack {headerEnding}.
         </Heading>
         <SearchInput
           inputGroup={{ size: 'lg', mt: 5 }}
           input={{
             placeholder: 'What do you want to learn?',
-            borderColor: 'green.500'
+            borderColor: `${color}.400`
           }}
         />
-        <Box float="right" mt={2}>
+        <Box float={{ base: 'none', md: 'right' }} mt={2}>
           <YoutubeButton />
           <TwitterButton />
           <GitHubButton />
           <DiscordButton />
         </Box>
       </Box>
-    </Center>
+    </Flex>
   )
 }
 
@@ -91,6 +141,10 @@ const Feature: React.FC<FeatureProps> = props => {
   const { title, children, icon } = props
   return (
     <Stack
+      alignItems={{ base: 'center', md: 'normal' }}
+      textAlign={{ base: 'center', md: 'left' }}
+      m={{ base: 'auto', md: 0 }}
+      maxW={{ base: 350, md: 'full' }}
       spacing={{ base: '3', md: '6' }}
       direction={{ base: 'column', md: 'row' }}
     >
@@ -99,7 +153,9 @@ const Feature: React.FC<FeatureProps> = props => {
         <Text fontWeight="bold" letterSpacing="wide" fontSize="xl">
           {title}
         </Text>
-        <Box color={useColorModeValue('gray.600', 'gray.400')}>{children}</Box>
+        <Box color={useColorModeValue('gray.600', 'gray.400')} fontSize="lg">
+          {children}
+        </Box>
       </Stack>
     </Stack>
   )
@@ -108,10 +164,17 @@ const Feature: React.FC<FeatureProps> = props => {
 const Index: NextPage<ContentTabsProps> = props => {
   return (
     <LayoutContainer maxWidth="6xl">
-      <Hero />
+      <Box as="section">
+        <Hero />
+      </Box>
 
-      <Box as="section" marginY={28}>
-        <SimpleGrid columns={3} spacingX={10}>
+      <Box as="section" marginY={{ base: 16, md: 28 }}>
+        <SimpleGrid
+          columns={{ base: 0, md: 3 }}
+          rows={{ base: 3, md: 0 }}
+          spacingX={10}
+          spacingY={10}
+        >
           <Feature title="Discord Community" icon={<FcComments />}>
             We have a discord channel where you can chat and learn with others.
           </Feature>
@@ -127,7 +190,7 @@ const Index: NextPage<ContentTabsProps> = props => {
       </Box>
 
       <Box as="section" marginY={28}>
-        <Box mb={5} ml={3}>
+        <Box mb={5} ml={3} textAlign={{ base: 'center', md: 'left' }}>
           <Heading as="h2" mb={2}>
             Get started learning for free.
           </Heading>
@@ -144,12 +207,14 @@ const Index: NextPage<ContentTabsProps> = props => {
           rounded="md"
           bgColor="discord"
           p={10}
+          direction={{ base: 'column', md: 'row' }}
           alignItems="center"
           boxShadow="md"
           color="white"
+          textAlign={{ base: 'center', md: 'left' }}
         >
           <Icon as={FaDiscord} fontSize="6xl" />
-          <Box mx={10}>
+          <Box mx={{ base: 4, md: 10 }} my={{ base: 5, md: 0 }}>
             <Heading fontSize="2xl">Connect with the community</Heading>
             <Text>
               Feel free to ask questions, talk about software, and meet new
@@ -164,7 +229,12 @@ const Index: NextPage<ContentTabsProps> = props => {
       </Box>
 
       <Box as="section" marginY={48}>
-        <Flex alignItems="center" position="relative">
+        <Flex
+          alignItems="center"
+          position="relative"
+          direction={{ base: 'column', lg: 'row' }}
+          textAlign={{ base: 'center', lg: 'left' }}
+        >
           <Box>
             <Heading as="h3" fontSize="6xl" mb={2} lineHeight={1} m={2}>
               Become a{' '}
@@ -182,10 +252,20 @@ const Index: NextPage<ContentTabsProps> = props => {
               </Button>
             </NextLink>
           </Box>
-          <DevelopmentGraphic position="absolute" right={0} w={550} m={3} />
+          <DevelopmentGraphic
+            position={{ base: 'relative', lg: 'absolute' }}
+            right={0}
+            w={{ base: 'inherit', md: 550 }}
+            m={{ base: 10, lg: 3 }}
+          />
         </Flex>
 
-        <SimpleGrid columns={3} rows={2} spacing={10} marginY={40}>
+        <SimpleGrid
+          columns={{ base: 1, md: 2, lg: 3 }}
+          rows={{ base: 6, md: 3, lg: 2 }}
+          spacing={10}
+          marginY={{ base: 10, md: 20, lg: 40 }}
+        >
           <Feature title="Learn to Code" icon={<FcInfo />}>
             Learn from high quality and engaging videos.
           </Feature>
@@ -209,13 +289,17 @@ const Index: NextPage<ContentTabsProps> = props => {
       </Box>
 
       <Box as="section" marginY={48}>
-        <Flex alignItems="center">
+        <Flex
+          alignItems="center"
+          direction={{ base: 'column', md: 'row' }}
+          textAlign={{ base: 'center', md: 'left' }}
+        >
           <Box>
             <Image
               rounded="full"
               alt="Justin Brooks"
               src="/headshot.png"
-              w={450}
+              w={{ base: 250, sm: 300, md: 450 }}
             />
             <Center mt={2}>
               <TwitterButton />
@@ -223,7 +307,7 @@ const Index: NextPage<ContentTabsProps> = props => {
               <GitHubPersonalButton />
             </Center>
           </Box>
-          <Box fontSize="xl" ml={10}>
+          <Box fontSize="xl" m={{ base: 5, md: 0 }} mx={{ md: 10 }}>
             <Heading as="h4" fontSize="5xl" mt={2}>
               Hi there, I&lsquo;m{' '}
               <chakra.span color="purple.300">Justin Brooks</chakra.span>.

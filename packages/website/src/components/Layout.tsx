@@ -5,7 +5,7 @@ import { NavBar } from './NavBar'
 
 export const LayoutNavbarFooter: React.FC = ({ children }) => {
   return (
-    <Box position="relative" minH="100vh" minW="100vh" paddingBottom={24}>
+    <Box position="relative" minH="100vh" paddingBottom={24}>
       <NavBar />
       {children}
       <Box bottom={0} h={24} left={0} w="full" position="absolute">

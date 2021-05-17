@@ -1,10 +1,18 @@
 import React from 'react'
-import { chakra, ChakraProps, useColorModeValue } from '@chakra-ui/react'
+import {
+  chakra,
+  ChakraProps,
+  useBreakpointValue,
+  useColorModeValue
+} from '@chakra-ui/react'
 
-export const ProgressGraphic: React.FC<ChakraProps> = props => {
+export const ProgressGraphic: React.FC<ChakraProps & { color: string }> = ({
+  color = 'green',
+  ...props
+}) => {
   const green = useColorModeValue(
-    'var(--chakra-colors-green-400)',
-    'var(--chakra-colors-green-500)'
+    `var(--chakra-colors-${color}-400)`,
+    `var(--chakra-colors-${color}-500)`
   )
   const shirt = green
   const circleBg = green
@@ -33,22 +41,23 @@ export const ProgressGraphic: React.FC<ChakraProps> = props => {
   const checkmark = '#fff'
 
   const plant = useColorModeValue(
-    'var(--chakra-colors-green-200)',
-    'var(--chakra-colors-green-900)'
+    `var(--chakra-colors-${color}-200)`,
+    `var(--chakra-colors-${color}-900)`
   )
   const plantVines = useColorModeValue(
-    'var(--chakra-colors-green-300)',
-    'var(--chakra-colors-green-800)'
+    `var(--chakra-colors-${color}-300)`,
+    `var(--chakra-colors-${color}-800)`
   )
   const platform = useColorModeValue(
     'var(--chakra-colors-gray-300)',
     'var(--chakra-colors-gray-600)'
   )
+  const isSmall = useBreakpointValue({ base: true, md: false })
   return (
     <chakra.svg
       {...props}
       xmlns="http://www.w3.org/2000/svg"
-      viewBox="0 0 967.97244 529"
+      viewBox={isSmall ? '0 0 523 529' : '0 0 967.97244 529'}
     >
       <path
         d="M154.44233,692.271c26.42252,19.03478,60.66413,19.99056,93.76235,17.65213,4.62174-.32609,9.21077-.70874,13.75729-1.12157.02746-.00712.06353-.00458.09143-.01167.2185-.0208.43744-.04161.6465-.054.93841-.08779,1.87724-.1755,2.80685-.26387l-.2196.419-.68925,1.30024c.2477-.43517.49521-.86129.74291-1.29646.07285-.13062.15451-.26067.22693-.39138,8.57426-14.92076,17.07842-30.38965,19.24765-47.4275,2.24221-17.68452-4.05929-37.70924-19.62367-46.40124a31.40808,31.40808,0,0,0-6.4449-2.69923c-.93085-.28285-1.8743-.51228-2.82845-.71534A33.66447,33.66447,0,0,0,216.76908,655.022c-13.19581-13.53109-10.73425-35.482-6.18233-53.82747,4.56073-18.34493,10.08188-38.7585.80579-55.236-5.15643-9.17155-14.2243-14.86189-24.40066-17.15421-.31218-.06731-.62393-.13454-.93675-.19277a49.13015,49.13015,0,0,0-35.29737,6.1847c-19.45809,12.26176-29.452,35.51036-32.69561,58.28426C112.8361,629.72786,124.40143,670.62755,154.44233,692.271Z"
@@ -130,25 +139,49 @@ export const ProgressGraphic: React.FC<ChakraProps> = props => {
         transform="translate(-116.01378 -185.5)"
         fill={hair}
       />
-      <polygon
-        points="267.719 265.859 266.305 264.445 327.767 202.982 446.875 202.982 506.97 141.647 624.539 141.647 683.855 81.869 959.972 81.869 959.972 83.869 684.688 83.869 625.372 143.647 507.81 143.647 447.715 204.982 328.596 204.982 267.719 265.859"
-        fill={circleOutlineSmall}
-      />
-      <circle cx="508.97244" cy="143" r="37" fill={circleOutline} />
-      <circle cx="684.97244" cy="83" r="10" fill={circleSmall} />
-      <circle cx="957.97244" cy="83" r="10" fill={circleSmall} />
-      <circle cx="821.97244" cy="83" r="10" fill={circleSmall} />
-      <path
-        d="M624.98622,366.5a38,38,0,1,1,38-38A38.04307,38.04307,0,0,1,624.98622,366.5Zm0-74a36,36,0,1,0,36,36A36.04061,36.04061,0,0,0,624.98622,292.5Z"
-        transform="translate(-116.01378 -185.5)"
-        fill={circleOutlineSmall}
-      />
-      <circle cx="508.97244" cy="143" r="26.43632" fill={circleBg} />
-      <polygon
-        points="506.453 154.16 498.541 143.986 503.142 140.407 506.889 145.224 519.545 131.863 523.777 135.873 506.453 154.16"
-        fill={checkmark}
-      />
-      <circle cx="326.97244" cy="204" r="37" fill={circleOutline} />
+      {isSmall ? (
+        <polygon
+          points="267.719 265.859 266.305 264.445 327.767 202.982 446.875 202.982 506.97 141.647 507.81 143.647 447.715 204.982 328.596 204.982"
+          fill={circleOutlineSmall}
+        />
+      ) : (
+        <polygon
+          points="267.719 265.859 266.305 264.445 327.767 202.982 446.875 202.982 506.97 141.647 624.539 141.647 683.855 81.869 959.972 81.869 959.972 83.869 684.688 83.869 625.372 143.647 507.81 143.647 447.715 204.982 328.596 204.982 267.719 265.859"
+          fill={circleOutlineSmall}
+        />
+      )}
+      {/* {isSmall ? (
+        <polygon
+          points="267.719 265.859 266.305 264.445 327.767 202.982 446.875 202.982 506.97 141.647 624.539 141.647 683.855 81.869 684.688 83.869 625.372 143.647 507.81 143.647 447.715 204.982 328.596 204.982"
+          fill={circleOutlineSmall}
+        />
+      ) : (
+        <polygon
+          points="267.719 265.859 266.305 264.445 327.767 202.982 446.875 202.982 506.97 141.647 624.539 141.647 683.855 81.869 959.972 81.869 959.972 83.869 684.688 83.869 625.372 143.647 507.81 143.647 447.715 204.982 328.596 204.982 267.719 265.859"
+          fill={circleOutlineSmall}
+        />
+      )} */}
+      {!isSmall ? (
+        <>
+          <circle cx="684.97244" cy="83" r="10" fill={circleSmall} />
+          <circle cx="957.97244" cy="83" r="10" fill={circleSmall} />
+          <circle cx="821.97244" cy="83" r="10" fill={circleSmall} />
+          <path
+            d="M624.98622,366.5a38,38,0,1,1,38-38A38.04307,38.04307,0,0,1,624.98622,366.5Zm0-74a36,36,0,1,0,36,36A36.04061,36.04061,0,0,0,624.98622,292.5Z"
+            transform="translate(-116.01378 -185.5)"
+            fill={circleOutlineSmall}
+          />
+          <circle cx="508.97244" cy="143" r="37" fill={circleOutline} />
+          <circle cx="326.97244" cy="204" r="37" fill={circleOutline} />
+          <circle cx="508.97244" cy="143" r="26.43632" fill={circleBg} />
+          <polygon
+            points="506.453 154.16 498.541 143.986 503.142 140.407 506.889 145.224 519.545 131.863 523.777 135.873 506.453 154.16"
+            fill={checkmark}
+          />
+        </>
+      ) : (
+        <circle cx="508.97244" cy="143" r="10" fill={circleSmall} />
+      )}
       <path
         d="M442.98622,427.5a38,38,0,1,1,38-38A38.04315,38.04315,0,0,1,442.98622,427.5Zm0-74a36,36,0,1,0,36,36A36.0407,36.0407,0,0,0,442.98622,353.5Z"
         transform="translate(-116.01378 -185.5)"

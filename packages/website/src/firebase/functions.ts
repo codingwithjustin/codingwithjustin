@@ -66,3 +66,7 @@ export const getCouponCode = httpsCallable<{ code: string }, {}>(
   getFunctions(),
   'stripeGetCoupon'
 )
+
+export const cancelSubscription = httpsCallable<
+  { immediately: true } | { cancelAtPeriodEnd: boolean }
+>(getFunctions(), 'stripeCancelSubscription')

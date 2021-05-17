@@ -33,7 +33,12 @@ const StyledTab: React.FC = ({ children }) => (
 )
 
 const Banner: React.FC<FlexProps> = ({ children, ...rest }) => (
-  <Flex m={6} alignItems="center" {...rest}>
+  <Flex
+    m={6}
+    alignItems="center"
+    direction={{ base: 'column', md: 'row' }}
+    {...rest}
+  >
     {children}
   </Flex>
 )
@@ -42,8 +47,10 @@ const BannerButton: React.FC<ButtonProps & { href: string }> = ({
   href,
   ...props
 }) => (
-  <NextLink href={href}>
+  <NextLink href={href} passHref>
     <Button
+      as="a"
+      mt={{ base: 5, md: 0 }}
       flexShrink={0}
       size="sm"
       variant="outline"
@@ -55,7 +62,13 @@ const BannerButton: React.FC<ButtonProps & { href: string }> = ({
 )
 
 const BannerHeader: React.FC<HeadingProps> = props => (
-  <Heading as="h4" flexGrow={1} fontSize="2xl" {...props}></Heading>
+  <Heading
+    as="h4"
+    flexGrow={1}
+    fontSize="2xl"
+    textAlign={{ base: 'center', md: 'left' }}
+    {...props}
+  />
 )
 
 export interface ContentTabsProps {

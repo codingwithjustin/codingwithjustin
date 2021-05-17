@@ -6,19 +6,17 @@ import * as Firestore from '../../firestore'
 export const stripeCreateSubscription = functions.https.onCall(async data => {
   const { priceId, customerId, coupon } = data
 
-  if (typeof priceId !== 'string') {
+  if (typeof priceId !== 'string')
     throw new functions.https.HttpsError(
       'invalid-argument',
       'The function must be called with a price id.'
     )
-  }
 
-  if (typeof customerId !== 'string') {
+  if (typeof customerId !== 'string')
     throw new functions.https.HttpsError(
       'invalid-argument',
       'The function must be called with a customer id.'
     )
-  }
 
   try {
     const subscription = await StripeHelper.createSubscription({
@@ -40,13 +38,45 @@ export const stripeCreateSubscription = functions.https.onCall(async data => {
 })
 
 export const stripeGetUserSubscription = functions.https.onCall(
-  async (_, context) => {
-    if (context.auth == null) return { refetch: false }
-    const { uid } = context.auth
+  async (_, { auth }) => {
+    if (auth == null)
+      throw new functions.https.HttpsError(
+        'unauthenticated',
+        'No user is logged in.'
+      )
+    const { uid } = auth
     const user = await Firestore.getUser(uid)
     const subscriptionId = user.membership?.subscriptionId
     if (subscriptionId == null)
       throw new Error('User does not have a subscription.')
     return StripeHelper.getSubscription(subscriptionId)
+  }
+)
+
+export const stripeCancelSubscription = functions.https.onCall(
+  async (data, { auth }) => {
+    const { immediately, cancelAtPeriodEnd = true } = data
+
+    if (auth == null)
+      throw new functions.https.HttpsError(
+        'unauthenticated',
+        'No user is logged in.'
+      )
+
+    const user = await Firestore.getUser(auth.uid)
+    const subscriptionId = user.membership?.subscriptionId
+
+    if (subscriptionId == null)
+      throw new functions.https.HttpsError(
+        'invalid-argument',
+        'User does not have a subscription.'
+      )
+
+    return immediately != null
+      ? StripeHelper.cancelSubscriptionImmediately(subscriptionId)
+      : StripeHelper.cancelSubscriptionAtPeriodEnd(
+          subscriptionId,
+          cancelAtPeriodEnd
+        )
   }
 )

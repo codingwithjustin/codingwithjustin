@@ -91,9 +91,18 @@ export const isMembershipProductId = (productId: string) => {
   )
 }
 
-// export const cancelSubscription = (subId: string, immediatly) => {
-//   return stripe.subscriptions.del(subId)
-// }
+export const cancelSubscriptionImmediately = (subId: string) => {
+  return stripe.subscriptions.del(subId)
+}
+
+export const cancelSubscriptionAtPeriodEnd = (
+  subId: string,
+  cancelAtPeriodEnd: boolean
+) => {
+  return stripe.subscriptions.update(subId, {
+    cancel_at_period_end: cancelAtPeriodEnd
+  })
+}
 
 export const getPromotionCode = (couponId: string) => {
   return stripe.promotionCodes.retrieve(couponId)

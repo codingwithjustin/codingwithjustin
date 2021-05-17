@@ -15,7 +15,9 @@ import {
   AspectRatio,
   Icon,
   Center,
-  VStack
+  VStack,
+  BoxProps,
+  HeadingProps
 } from '@chakra-ui/react'
 import React, { useEffect, useState } from 'react'
 import { YouTubeVideo } from '@/components/Youtube'
@@ -31,7 +33,7 @@ import remarkMdx from 'remark-mdx'
 import { useDocumentOnce } from '@/firebase/firestore'
 import { getFirestore, setDoc } from '@firebase/firestore'
 import { doc } from 'firebase/firestore'
-import { useAuthState } from '@/firebase'
+import { useAuthState, useUserData } from '@/firebase'
 import {
   DiscordButton,
   GitHubPersonalButton,
@@ -41,17 +43,12 @@ import {
 import { ContentTag } from '@/components/content/ContentCard'
 import { FaLock } from 'react-icons/fa'
 import { NextSeo } from 'next-seo'
+import NextLink from 'next/link'
+import { Card } from '@/components/Card'
 
 const ProBanner: React.FC = () => {
   return (
-    <Box
-      borderColor="green.400"
-      borderWidth={2}
-      bgColor="gray.700"
-      rounded="md"
-      mb={6}
-      p={6}
-    >
+    <Card borderColor="green.400" borderWidth={2} mb={6} p={6}>
       <Heading color="green.200" pb={0}>
         Membership
       </Heading>
@@ -59,7 +56,7 @@ const ProBanner: React.FC = () => {
         Become a member and gain access to premium content.
       </Text>
       <Button colorScheme="green">Learn more</Button>
-    </Box>
+    </Card>
   )
 }
 
@@ -99,25 +96,100 @@ const EditBody: React.FC<{ contentId: string }> = ({ contentId }) => {
   )
 }
 
-interface ContentPageProps {
-  content: Content
-  mdx: MDXRemoteSerializeResult
-  headings: any[]
+const VideoPaywall: React.FC<{ content: Content }> = props => {
+  const { content } = props
+  const thumbnail = contentThumbnail(content)
+  const premiumOverlays = useColorModeValue('whiteAlpha.700', 'blackAlpha.800')
+  return (
+    <AspectRatio ratio={16 / 9} rounded="md" top={0} left={0}>
+      <Box position="relative">
+        <Image roundedTopLeft="md" roundedTopRight="md" src={thumbnail} />
+        <Center
+          bgColor={premiumOverlays}
+          roundedTopLeft="md"
+          roundedTopRight="md"
+          w="full"
+          h="full"
+          position="absolute"
+        >
+          <VStack spacing={5}>
+            <Icon as={FaLock} fontSize="8rem" color="green.500" />
+            <NextLink href="/pricing" passHref>
+              <Button as="a" colorScheme="green" size="lg">
+                Become a member
+              </Button>
+            </NextLink>
+          </VStack>
+        </Center>
+      </Box>
+    </AspectRatio>
+  )
 }
 
-const ContentPage: NextPage<ContentPageProps> = ({
-  content,
-  mdx,
-  headings
-}) => {
-  const { isAdmin } = useAuthState()
+interface TableOfContentsProps extends BoxProps {
+  headings: any[]
+  content: Content
+}
+
+const TableOfContents: React.FC<TableOfContentsProps> = props => {
+  const { headings, content, ...boxProps } = props
   const tocColor = useColorModeValue('blue.700', 'blue.200')
   const tocColorSecondary = useColorModeValue('gray.600', 'gray.200')
 
-  const { type, premium, title, description } = content
-  const thumbnail = contentThumbnail(content)
-  const premiumOverlays = useColorModeValue('whiteAlpha.700', 'blackAlpha.800')
+  return (
+    <Box
+      p={6}
+      bgColor={useColorModeValue('white', 'gray.700')}
+      boxShadow="sm"
+      borderRadius="md"
+      {...boxProps}
+    >
+      <Text
+        fontWeight="bold"
+        fontSize="lg"
+        color={tocColor}
+        letterSpacing="wide"
+        mb={4}
+      >
+        {content.title}
+      </Text>
+      {headings.map((h: any, i) => (
+        <Text
+          key={i}
+          {...(h.depth == 1
+            ? {
+                color: tocColor,
+                mt: 3,
+                fontWeight: 'bold'
+              }
+            : {
+                ml: 2,
+                color: tocColorSecondary
+              })}
+        >
+          {h.value}
+        </Text>
+      ))}
+    </Box>
+  )
+}
 
+interface ContentPageProps {
+  content: Content
+  mdx: MDXRemoteSerializeResult
+  preview: MDXRemoteSerializeResult
+  headings: any[]
+}
+
+const ContentHeading: React.FC<HeadingProps> = props => (
+  <Heading as="h1" mb={8} fontSize={{ base: '5xl', lg: '6xl' }} {...props} />
+)
+
+const ContentPage: NextPage<ContentPageProps> = props => {
+  const { content, mdx, headings } = props
+  const { type, premium, title, description } = content
+  const { isAdmin } = useAuthState()
+  const { hasAccess, hasMembership } = useUserData()
   return (
     <>
       <NextSeo
@@ -126,49 +198,20 @@ const ContentPage: NextPage<ContentPageProps> = ({
         openGraph={{ title, description }}
       />
       <LayoutContainer maxW="6xl">
-        <Heading as="h1" mb={8} fontSize={{ base: '5xl', lg: '6xl' }}>
-          {content.title}
-        </Heading>
-
+        <ContentHeading>{content.title}</ContentHeading>
         <Flex>
           <Box flexGrow={1}>
-            <Box
-              rounded="md"
-              shadow="md"
-              bgColor={useColorModeValue('white', 'gray.700')}
-            >
+            <Card>
               <Box position="relative">
-                {'youtubeId' in content &&
-                  !premium &&
-                  typeof content.youtubeId === 'string' && (
-                    <YouTubeVideo id={content.youtubeId} />
-                  )}
-
-                {premium && type === 'video' && (
-                  <AspectRatio ratio={16 / 9} rounded="md" top={0} left={0}>
-                    <Box position="relative">
-                      <Image
-                        roundedTopLeft="md"
-                        roundedTopRight="md"
-                        src={thumbnail}
-                      />
-                      <Center
-                        bgColor={premiumOverlays}
-                        roundedTopLeft="md"
-                        roundedTopRight="md"
-                        w="full"
-                        h="full"
-                        position="absolute"
-                      >
-                        <VStack spacing={5}>
-                          <Icon as={FaLock} fontSize="8rem" color="green.500" />
-                          <Button colorScheme="green" size="lg">
-                            Become a member
-                          </Button>
-                        </VStack>
-                      </Center>
-                    </Box>
-                  </AspectRatio>
+                {premium && !hasAccess(content) ? (
+                  <>{type == 'video' && <VideoPaywall content={content} />}</>
+                ) : (
+                  <>
+                    {'youtubeId' in content &&
+                      typeof content.youtubeId === 'string' && (
+                        <YouTubeVideo id={content.youtubeId} />
+                      )}
+                  </>
                 )}
               </Box>
 
@@ -206,51 +249,19 @@ const ContentPage: NextPage<ContentPageProps> = ({
                   </Box>
                 </Flex>
               </Box>
-            </Box>
+            </Card>
 
             <Box as="section" py={12}>
               <MDXRemote {...mdx} />
             </Box>
 
-            <ProBanner />
+            {!hasMembership && <ProBanner />}
           </Box>
+
           <Box w={350} flexShrink={0} ml={6}>
             <Box position="sticky" top={5}>
-              <Box
-                p={6}
-                bgColor={useColorModeValue('white', 'gray.700')}
-                boxShadow="sm"
-                borderRadius="md"
-              >
-                <Text
-                  fontWeight="bold"
-                  fontSize="lg"
-                  color={tocColor}
-                  letterSpacing="wide"
-                  mb={4}
-                >
-                  {content.title}
-                </Text>
-                {headings.map((h: any, i) => (
-                  <Text
-                    key={i}
-                    {...(h.depth == 1
-                      ? {
-                          color: tocColor,
-                          mt: 3,
-                          fontWeight: 'bold'
-                        }
-                      : {
-                          ml: 2,
-                          color: tocColorSecondary
-                        })}
-                  >
-                    {h.value}
-                  </Text>
-                ))}
-              </Box>
-
-              {isAdmin && content.id && <EditBody contentId={content.id} />}
+              <TableOfContents content={content} headings={headings} />
+              {isAdmin && <EditBody contentId={content.id} />}
             </Box>
           </Box>
         </Flex>
@@ -290,13 +301,17 @@ export const getStaticProps: GetStaticProps<
   const { body } = content
   const mdx = await serialize(body)
 
+  const lines = body.split('\n').slice(0, 5).join('\n')
+  const preview = await serialize(lines)
+
   const structure: any = remark()
   const headings = structure
     .use(remarkMdx)
     .parse(body)
     .children.filter((f: any) => f.type === 'heading' && f.depth < 3)
     .map((h: any) => ({ ...h, ...(h.children?.[0] ?? {}) }))
-  return { props: { content, mdx, headings } }
+
+  return { props: { content, mdx, preview, headings } }
 }
 
 export default ContentPage

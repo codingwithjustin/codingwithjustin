@@ -1,6 +1,7 @@
 import * as functions from 'firebase-functions'
 import * as nacl from 'tweetnacl'
 import * as Firestore from '../firestore'
+import * as admin from 'firebase-admin'
 
 import { discordPublicKey } from './config'
 
@@ -41,5 +42,7 @@ export const linkAccount = async (email: string, discord: DiscordUser) => {
 export const unlinkAccount = async (discordUser: DiscordUser) => {
   const user = await Firestore.getUserByDiscordId(discordUser.id)
   if (user == null) throw new Error('No account has been linked.')
-  await Firestore.updateUser(user.uid, { discord: undefined })
+  await Firestore.updateUser(user.uid, {
+    discord: admin.firestore.FieldValue.delete() as any
+  })
 }

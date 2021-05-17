@@ -12,7 +12,7 @@ import {
 import { useEffect, useState } from 'react'
 import { useAnalytics } from './analytics'
 import { useDocument } from './firestore'
-import { User as UserDocument } from '@shared/firestore'
+import { Content, User as UserDocument } from '@shared/firestore'
 import { useRouter } from 'next/router'
 import { setCustomUserClaims } from './functions'
 
@@ -83,7 +83,13 @@ export const useUserData = () => {
     [user]
   )
   const { value } = useDocument<UserDocument>(docRef)
-  return value
+
+  const hasMembership = value?.membership != null
+  const hasAccess = (_: Content) => {
+    return hasMembership
+  }
+
+  return { ...value, hasAccess, hasMembership }
 }
 
 export const useAdminRedirect = () => {
