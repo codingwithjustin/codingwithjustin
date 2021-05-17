@@ -1,5 +1,6 @@
 import React from 'react'
 import { Box, BoxProps, Divider, DividerProps, Text } from '@chakra-ui/react'
+import { Card } from './Card'
 
 export const SettingsHeading: React.FC<
   BoxProps & { title: string; description: string }
@@ -15,7 +16,7 @@ export const SettingsHeading: React.FC<
 }
 
 export const SettingsCard: React.FC<BoxProps> = props => {
-  return <Box rounded="md" bgColor="gray.700" {...props} p={5} my={10} />
+  return <Card {...props} p={5} my={10} />
 }
 
 export const SettingsDivider: React.FC<DividerProps> = props => (

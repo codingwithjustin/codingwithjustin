@@ -3,6 +3,7 @@ import {
   Box,
   Button,
   ButtonProps,
+  Divider,
   Drawer,
   DrawerBody,
   DrawerCloseButton,
@@ -75,8 +76,9 @@ const NavDrawer: React.FC = () => {
     <>
       <IconButton
         icon={<FaBars />}
-        color="gray.400"
+        color={useColorModeValue('gra.600', 'gray.500')}
         variant="ghost"
+        fontSize="xl"
         onClick={onOpen}
         aria-label="Navbar menu"
       />
@@ -105,6 +107,8 @@ const NavDrawer: React.FC = () => {
                   Admin
                 </NavButton>
               )}
+              <Divider />
+              <DarkModeSwitch />
             </VStack>
           </DrawerBody>
 
@@ -119,7 +123,7 @@ export const NavBar: React.FC<FlexProps> = props => {
   const { isLoggedIn, isAdmin } = useAuthState()
 
   const isSmall = useBreakpointValue({ base: true, md: false })
-  const showSmallTitle = useBreakpointValue({ base: true, lg: false })
+  const isMd = useBreakpointValue({ base: true, lg: false })
   return (
     <Flex
       {...props}
@@ -130,9 +134,7 @@ export const NavBar: React.FC<FlexProps> = props => {
       height={16}
     >
       <Heading fontSize="xl" mr={5}>
-        <NextLink href="/">
-          {showSmallTitle ? 'CWJ' : 'Coding With Justin'}
-        </NextLink>
+        <NextLink href="/">{isMd ? 'CWJ' : 'Coding With Justin'}</NextLink>
       </Heading>
 
       {!isSmall && (
@@ -153,7 +155,7 @@ export const NavBar: React.FC<FlexProps> = props => {
         <SearchInput />
       </Box>
       <Box flexShrink={0} mr={2}>
-        {!isSmall && <DarkModeSwitch mr={2} />}
+        {!isMd && <DarkModeSwitch mr={2} />}
         {isLoggedIn ? (
           <UserMenu />
         ) : (

@@ -54,7 +54,10 @@ const AnimateText = ({ value }: { value: [string, string] }) => {
         position="relative"
         display="inline"
         zIndex={10}
-        color={`${value[1]}.400`}
+        textDecoration="underline"
+        fontWeight="extrabold"
+        letterSpacing="wide"
+        color={useColorModeValue(`${value[1]}.400`, `${value[1]}.300`)}
         key={value[0]}
         transition="easeInOut"
         initial={{ opacity: 0, top: -10, scale: 0.95 }}
@@ -68,11 +71,13 @@ const AnimateText = ({ value }: { value: [string, string] }) => {
 }
 
 const Hero: React.FC = () => {
-  const switchTime = 5000
+  const switchTime = 3000
   const words: Array<[string, string]> = [
     ['design', 'green'],
     ['build', 'teal'],
-    ['deploy', 'blue']
+    ['deploy', 'blue'],
+    ['scale', 'cyan'],
+    ['test', 'purple']
   ]
 
   const [index, setIndex] = useState(0)
@@ -103,7 +108,7 @@ const Hero: React.FC = () => {
       <Box
         top="47%"
         left="42%"
-        position={{ base: 'relative', md: 'absolute' }}
+        position={{ base: 'static', md: 'absolute' }}
         marginTop={{ base: 5, md: 0 }}
       >
         <Heading
@@ -228,7 +233,13 @@ const Index: NextPage<ContentTabsProps> = props => {
             </Text>
           </Box>
           <Spacer />
-          <Button flexShrink={0} size="lg" py={7} fontWeight="extrabold">
+          <Button
+            flexShrink={0}
+            size="lg"
+            color={useColorModeValue('black', 'white')}
+            py={7}
+            fontWeight="extrabold"
+          >
             Join #CWJ Discord
           </Button>
         </Flex>
@@ -242,9 +253,15 @@ const Index: NextPage<ContentTabsProps> = props => {
           textAlign={{ base: 'center', lg: 'left' }}
         >
           <Box>
-            <Heading as="h3" fontSize="6xl" mb={2} lineHeight={1} m={2}>
+            <Heading as="h3" fontSize="5xl" mb={2} lineHeight={1} m={2}>
               Become a{' '}
-              <Text as="span" color={useColorModeValue('blue.600', 'blue.300')}>
+              <Text
+                as="span"
+                color={useColorModeValue('blue.600', 'blue.300')}
+                fontWeight="extrabold"
+                textDecor="underline"
+                letterSpacing="wide"
+              >
                 member
               </Text>
               !
@@ -261,7 +278,7 @@ const Index: NextPage<ContentTabsProps> = props => {
           <DevelopmentGraphic
             position={{ base: 'relative', lg: 'absolute' }}
             right={0}
-            w={{ base: 'inherit', md: 550 }}
+            w={{ base: 'inherit', md: 550, lg: 500 }}
             m={{ base: 10, lg: 3 }}
           />
         </Flex>
@@ -316,7 +333,15 @@ const Index: NextPage<ContentTabsProps> = props => {
           <Box fontSize="xl" m={{ base: 5, md: 0 }} mx={{ md: 10 }}>
             <Heading as="h4" fontSize="5xl" mt={2}>
               Hi there, I&lsquo;m{' '}
-              <chakra.span color="purple.300">Justin Brooks</chakra.span>.
+              <chakra.span
+                color="purple.300"
+                fontWeight="extrabold"
+                textDecoration="underline"
+                letterSpacing="wide"
+              >
+                Justin Brooks
+              </chakra.span>
+              .
             </Heading>
             <Text>
               My goal is to make learning software engaging, easy and quick.

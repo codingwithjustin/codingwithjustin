@@ -1,7 +1,7 @@
 import { extendTheme } from '@chakra-ui/react'
 import { mode } from '@chakra-ui/theme-tools'
 
-const fonts = { mono: "'Menlo', monospace" }
+const fonts = { mono: "'Menlo', monospace", body: "'Rubik', sans-serif" }
 
 const theme = extendTheme({
   config: { initialColorMode: 'dark', useSystemColorMode: false },
