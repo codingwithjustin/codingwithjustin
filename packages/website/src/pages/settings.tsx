@@ -10,6 +10,7 @@ import {
 } from '@/components/Settings'
 import { SettingsMembership } from '@/components/SettingsMembership'
 import { SettingsDiscord } from '@/components/SettingsDiscord'
+import { NextSeo } from 'next-seo'
 
 const Settings: NextPage = () => {
   const { user } = useAuthState()
@@ -18,29 +19,41 @@ const Settings: NextPage = () => {
   if (userData == null || user == null) return null
 
   return (
-    <LayoutContainer>
-      <Flex alignItems="center" mb={5}>
-        <Avatar src={user?.photoURL ?? undefined} size="xl" />
-        <Box ml={5}>
-          <Heading as="h1">{user?.displayName}</Heading>
-          <Text fontSize="lg">{user?.email}</Text>
-        </Box>
-      </Flex>
+    <>
+      <NextSeo
+        title="Account Settings"
+        description="Update or change your user settings."
+      />
+      <LayoutContainer>
+        {userData == null || user == null ? (
+          <Box>Please login to view account information.</Box>
+        ) : (
+          <>
+            <Flex alignItems="center" mb={5}>
+              <Avatar src={user?.photoURL ?? undefined} size="xl" />
+              <Box ml={5}>
+                <Heading as="h1">{user?.displayName}</Heading>
+                <Text fontSize="lg">{user?.email}</Text>
+              </Box>
+            </Flex>
 
-      <SettingsMembership />
-      <SettingsDiscord />
+            <SettingsMembership />
+            <SettingsDiscord />
 
-      <SettingsCard>
-        <SettingsHeading
-          title="Delete Account"
-          description="Deleting your account will also cancel your subscriptions."
-        />
-        <SettingsDivider />
-        <Button colorScheme="red" isDisabled>
-          Delete
-        </Button>
-      </SettingsCard>
-    </LayoutContainer>
+            <SettingsCard>
+              <SettingsHeading
+                title="Delete Account"
+                description="Deleting your account will also cancel your subscriptions."
+              />
+              <SettingsDivider />
+              <Button colorScheme="red" isDisabled>
+                Delete
+              </Button>
+            </SettingsCard>
+          </>
+        )}
+      </LayoutContainer>
+    </>
   )
 }
 

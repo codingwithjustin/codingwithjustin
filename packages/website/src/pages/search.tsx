@@ -9,6 +9,7 @@ import { GetStaticProps, NextPage } from 'next'
 import { ContentFilter } from '../content'
 import { FilterCheckbox, QueryFilter } from '../components/Filter'
 import { Content } from '@shared/firestore'
+import { NextSeo } from 'next-seo'
 
 const Search: NextPage<{ content: Content[] }> = ({ content }) => {
   const { query } = useRouter()
@@ -24,42 +25,48 @@ const Search: NextPage<{ content: Content[] }> = ({ content }) => {
   )
 
   return (
-    <LayoutContainer>
-      <Heading>
-        {results.length} results for &quot;{string}&quot;
-      </Heading>
+    <>
+      <NextSeo
+        title="Search"
+        description="Search for topics that interest you."
+      />
+      <LayoutContainer>
+        <Heading>
+          {results.length} results for &quot;{string}&quot;
+        </Heading>
 
-      <Flex mt={8}>
-        <Box w={275} mr={5}>
-          <Accordion defaultIndex={[0, 1, 2]} allowMultiple>
-            <QueryFilter name="Type">
-              <FilterCheckbox>Blog</FilterCheckbox>
-              <FilterCheckbox>Video</FilterCheckbox>
-              <FilterCheckbox>Course</FilterCheckbox>
-            </QueryFilter>
-            <QueryFilter name="Price">
-              <FilterCheckbox>Free</FilterCheckbox>
-              <FilterCheckbox>Membership</FilterCheckbox>
-            </QueryFilter>
-            <QueryFilter name="Level">
-              <FilterCheckbox>All Levels</FilterCheckbox>
-              <FilterCheckbox>Beginner</FilterCheckbox>
-              <FilterCheckbox>Intermediate</FilterCheckbox>
-              <FilterCheckbox>Expert</FilterCheckbox>
-            </QueryFilter>
-          </Accordion>
-        </Box>
+        <Flex mt={8}>
+          <Box w={275} mr={5}>
+            <Accordion defaultIndex={[0, 1, 2]} allowMultiple>
+              <QueryFilter name="Type">
+                <FilterCheckbox>Blog</FilterCheckbox>
+                <FilterCheckbox>Video</FilterCheckbox>
+                <FilterCheckbox>Course</FilterCheckbox>
+              </QueryFilter>
+              <QueryFilter name="Price">
+                <FilterCheckbox>Free</FilterCheckbox>
+                <FilterCheckbox>Membership</FilterCheckbox>
+              </QueryFilter>
+              <QueryFilter name="Level">
+                <FilterCheckbox>All Levels</FilterCheckbox>
+                <FilterCheckbox>Beginner</FilterCheckbox>
+                <FilterCheckbox>Intermediate</FilterCheckbox>
+                <FilterCheckbox>Expert</FilterCheckbox>
+              </QueryFilter>
+            </Accordion>
+          </Box>
 
-        <Box mt={-4}>
-          {results.map((s, i) => (
-            <Box key={i}>
-              {i !== 0 && <Divider />}
-              <HContentCard content={s} />
-            </Box>
-          ))}
-        </Box>
-      </Flex>
-    </LayoutContainer>
+          <Box mt={-4}>
+            {results.map((s, i) => (
+              <Box key={i}>
+                {i !== 0 && <Divider />}
+                <HContentCard content={s} />
+              </Box>
+            ))}
+          </Box>
+        </Flex>
+      </LayoutContainer>
+    </>
   )
 }
 

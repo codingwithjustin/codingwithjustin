@@ -7,7 +7,11 @@ import {
   Box,
   Button,
   Icon,
-  Center
+  Center,
+  HeadingProps,
+  ButtonProps,
+  TextProps,
+  FlexProps
 } from '@chakra-ui/react'
 
 import { GetStaticProps, NextPage } from 'next'
@@ -96,6 +100,32 @@ const PricingLifetime: React.FC = () => (
   </PricingCard>
 )
 
+const Feature: React.FC<FlexProps> = props => (
+  <Flex
+    alignItems="center"
+    direction={{ base: 'column', lg: 'row' }}
+    {...props}
+  />
+)
+
+const FeatureHeading: React.FC<HeadingProps> = props => (
+  <Heading as="h3" fontSize="6xl" mb={2} lineHeight={1} m={2} {...props} />
+)
+
+const FeatureText: React.FC<TextProps> = props => (
+  <TextMuted fontSize="lg" mx={2} my={5} fontWeight="semibold" {...props} />
+)
+
+const FeatureAction: React.FC<
+  ButtonProps & { children: string; href: string }
+> = ({ href, children, ...buttonProps }) => (
+  <NextLink href={href} passHref>
+    <Button as="a" size="lg" colorScheme="blue" mx={2} my={1} {...buttonProps}>
+      {children} <Icon ml={3} as={FaAngleRight} />
+    </Button>
+  </NextLink>
+)
+
 const Pricing: NextPage<{ prices: Price[] }> = ({ prices }) => {
   const [currency, setCurrency] = useState('usd')
   const [term, setTerm] = useState('monthly')
@@ -118,24 +148,29 @@ const Pricing: NextPage<{ prices: Price[] }> = ({ prices }) => {
         <CheckoutContext.Provider
           value={{ prices, currency, setCurrency, term, setTerm }}
         >
-          <Flex alignItems="center" position="relative" mb={5}>
+          <Flex
+            alignItems="center"
+            position="relative"
+            direction={{ base: 'column', lg: 'row' }}
+            mb={5}
+          >
             <PricingMonthly />
             <PricingAnnually />
             <PricingLifetime />
           </Flex>
           <Center mb={16}>
             <TextMuted fontSize="xs">
-              * Price above is in USD. Click &quot;Start Learning&quot; to view
+              * Prices above is in USD. Click &quot;Start Learning&quot; to view
               prices in other currencies.
             </TextMuted>
           </Center>
         </CheckoutContext.Provider>
 
         <Box as="section" marginY={24}>
-          <Flex alignItems="center">
+          <Feature>
             <SteamingGraphic w={400} flexShrink={0} />
             <Box m={12}>
-              <Heading as="h3" fontSize="6xl" mb={2} lineHeight={1} m={2}>
+              <FeatureHeading>
                 Unlimited access to all{' '}
                 <chakra.span
                   color={useColorModeValue('green.600', 'green.300')}
@@ -143,26 +178,24 @@ const Pricing: NextPage<{ prices: Price[] }> = ({ prices }) => {
                   courses
                 </chakra.span>
                 .
-              </Heading>
-              <TextMuted fontSize="lg" fontWeight="bold" m={2}>
-                Whether you’re a beginner or experienced developer, ou
+              </FeatureHeading>
+              <FeatureText>
+                Whether you’re a beginner or experienced developer, you
                 comprehensive courses will help you gain the practical skills
                 required as a software developer.
-              </TextMuted>
+              </FeatureText>
 
-              <NextLink href="/courses">
-                <Button size="lg" colorScheme="green" m={2}>
-                  View Courses <Icon ml={3} as={FaAngleRight} />
-                </Button>
-              </NextLink>
+              <FeatureAction href="/courses" colorScheme="green">
+                View Courses
+              </FeatureAction>
             </Box>
-          </Flex>
+          </Feature>
         </Box>
 
         <Box as="section" marginY={24}>
-          <Flex alignItems="center">
+          <Feature direction={{ base: 'column-reverse', lg: 'row' }}>
             <Box m={12} textAlign="right">
-              <Heading as="h3" fontSize="6xl" mb={2} lineHeight={1} m={2}>
+              <FeatureHeading>
                 Learn with other{' '}
                 <chakra.span
                   color={useColorModeValue('purple.600', 'purple.300')}
@@ -170,53 +203,53 @@ const Pricing: NextPage<{ prices: Price[] }> = ({ prices }) => {
                   developers
                 </chakra.span>
                 .
-              </Heading>
-              <TextMuted fontSize="lg" fontWeight="bold" m={2}>
+              </FeatureHeading>
+              <FeatureText>
                 Whether you’re a beginner or experienced developer, ou
                 comprehensive courses will help you gain the practical skills
                 required as a software developer.
-              </TextMuted>
+              </FeatureText>
 
-              <NextLink href="/discord">
-                <Button size="lg" colorScheme="purple" m={2}>
-                  Join Discord <Icon ml={3} as={FaAngleRight} />
-                </Button>
-              </NextLink>
+              <FeatureAction href="/discord" colorScheme="purple">
+                Join Discord
+              </FeatureAction>
             </Box>
-
             <NetworkGraphic w={425} m={5} flexShrink={0} />
-          </Flex>
+          </Feature>
         </Box>
 
         <Box as="section" marginY={24}>
-          <Flex alignItems="center">
+          <Feature>
             <DownloadGraphic w={400} m={5} flexShrink={0} />
             <Box m={12}>
-              <Heading as="h3" fontSize="6xl" mb={2} lineHeight={1} m={2}>
+              <FeatureHeading>
                 <chakra.span color={useColorModeValue('blue.600', 'blue.300')}>
                   Download
                 </chakra.span>{' '}
                 content for offline learning.
-              </Heading>
-              <TextMuted fontSize="lg" fontWeight="bold" m={2}>
+              </FeatureHeading>
+              <FeatureText>
                 Whether you’re a beginner or experienced developer, ou
                 comprehensive courses will help you gain the practical skills
                 required as a software developer.
-              </TextMuted>
+              </FeatureText>
 
-              <NextLink href="/pricing">
-                <Button size="lg" colorScheme="blue" m={2}>
-                  Become a member <Icon ml={3} as={FaAngleRight} />
-                </Button>
-              </NextLink>
+              <FeatureAction href="/pricing" colorScheme="blue">
+                Become a member
+              </FeatureAction>
             </Box>
-          </Flex>
+          </Feature>
 
           <Box as="section" marginY={48}>
-            <Heading as="h2" size="2xl" textAlign="center" mb={16}>
-              Become a member!
+            <Heading as="h2" textAlign="center" fontSize="5xl" mb={10}>
+              What are you waiting for?
             </Heading>
-            <Flex alignItems="center" position="relative" mb={16}>
+            <Flex
+              alignItems="center"
+              position="relative"
+              direction={{ base: 'column', lg: 'row' }}
+              mb={16}
+            >
               <PricingMonthly />
               <PricingAnnually />
               <PricingLifetime />

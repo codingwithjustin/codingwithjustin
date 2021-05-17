@@ -60,9 +60,9 @@ const AnimateText = ({ value }: { value: [string, string] }) => {
         color={useColorModeValue(`${value[1]}.400`, `${value[1]}.300`)}
         key={value[0]}
         transition="easeInOut"
-        initial={{ opacity: 0, top: -10, scale: 0.95 }}
-        animate={{ opacity: 1, top: 0, scale: 1 }}
-        exit={{ opacity: 0, top: 10, scale: 0.95 }}
+        initial={{ opacity: 0, top: -10 }}
+        animate={{ opacity: 1, top: 0 }}
+        exit={{ opacity: 0, top: 10 }}
       >
         {value[0]}
       </MotionSpan>

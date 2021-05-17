@@ -162,7 +162,7 @@ export const SettingsMembership: React.FC = () => {
       )}
 
       {hasSubscription && subscription == null && (
-        <Center h={300}>
+        <Center h={200}>
           <Spinner size="lg" />
         </Center>
       )}
