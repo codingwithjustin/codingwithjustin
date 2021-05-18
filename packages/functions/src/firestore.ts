@@ -62,5 +62,5 @@ export const getUserByDiscordId = async (discordId: string) => {
     .where('discord.id', '==', discordId)
     .limit(1)
     .get()
-    .then(d => d.docs?.[0].data() as User)
+    .then(d => d.docs?.[0].id)
 }

@@ -5,7 +5,12 @@ import * as admin from 'firebase-admin'
 
 import * as Discord from 'discord.js'
 
-import { discordPublicKey } from './config'
+import {
+  discordBotToken,
+  discordGuild,
+  discordPublicKey,
+  discordRole
+} from './config'
 import { User } from '@shared/firestore'
 
 export const verify = (req: functions.https.Request) => {
@@ -43,22 +48,19 @@ export const linkAccount = async (email: string, discord: DiscordUser) => {
 }
 
 export const unlinkAccount = async (discordUser: DiscordUser) => {
-  const user = await Firestore.getUserByDiscordId(discordUser.id)
-  if (user == null) throw new Error('No account has been linked.')
-  await Firestore.updateUser(user.uid, {
+  const id = await Firestore.getUserByDiscordId(discordUser.id)
+  if (id == null)
+    throw new Error('Your account is not associated with any account.')
+  await Firestore.updateUser(id, {
     discord: admin.firestore.FieldValue.delete() as any
   })
 }
 
-let _client: Discord.Client
-
 export const getClient = (): Promise<Discord.Client> => {
-  if (_client == null) _client = new Discord.Client()
-  return new Promise(resolve => _client.on('ready', () => resolve(_client)))
+  const client = new Discord.Client()
+  client.login(discordBotToken)
+  return new Promise(resolve => client.on('ready', () => resolve(client)))
 }
-
-const guidId = '841545159821099008'
-const roleId = '841554434772303872'
 
 export const giveMembershipRole = async (
   user: User,
@@ -66,9 +68,10 @@ export const giveMembershipRole = async (
 ) => {
   if (user.discord?.id == null) return
   const client = await getClient()
-  const guild = await client.guilds.fetch(guidId)
+  const guild = await client.guilds.fetch(discordGuild)
   const member = await guild.members.fetch(user.discord.id)
-  await member.roles.add(roleId, reason)
+  await member.roles.add(discordRole, reason)
+  client.destroy()
 }
 
 export const removeMembershipRole = async (
@@ -77,9 +80,10 @@ export const removeMembershipRole = async (
 ) => {
   if (user.discord?.id == null) return
   const client = await getClient()
-  const guild = await client.guilds.fetch(guidId)
+  const guild = await client.guilds.fetch(discordGuild)
   const member = await guild.members.fetch(user.discord.id)
-  await member.roles.remove(roleId, reason)
+  await member.roles.remove(discordRole, reason)
+  client.destroy()
 }
 
 export const updateUserRole = async (user: User) => {
@@ -91,6 +95,7 @@ export const updateUserRole = async (user: User) => {
 export const updateUserRoleChange = async (before: User, after: User) => {
   const give = giveMembershipRole
   const remove = removeMembershipRole
+
   const purchasedMembership =
     before.membership == null && after.membership != null
   const removedMembership =
@@ -101,26 +106,23 @@ export const updateUserRoleChange = async (before: User, after: User) => {
   const addedDiscord = before.discord == null && after.discord != null
   const removedDiscord = before.discord != null && after.discord == null
   const changedDiscord =
-    before.discord?.id != null && before.discord?.id !== after.discord?.id
+    before.discord != null &&
+    after.discord != null &&
+    before.discord.id !== after.discord.id
   const hasDiscordChanged = addedDiscord || removedDiscord || changedDiscord
 
   if (!hasMembershipChanged && !hasDiscordChanged) return
 
-  if (purchasedMembership) return give(after)
-  if (removedMembership) return remove(before)
+  if (purchasedMembership) return give(after, 'Purchased membership')
+  if (removedMembership) return remove(before, 'Removed subscription')
 
-  // if (purchasedMembership && changedDiscord) return give(after)
-  // if (purchasedMembership && addedDiscord) return give(after)
-  // if (purchasedMembership && removedDiscord) return
-  // if (purchasedMembership && !hasDiscordChanged) return give(after)
-
-  // if (removedMembership && changedDiscord) return remove(before)
-  // if (removedMembership && addedDiscord) return remove(before)
-  // if (removedMembership && removedDiscord) return remove(before)
-  // if (removedMembership && !hasDiscordChanged) return remove(before)
-
-  if (hasMembershipAfter && addedDiscord) return give(after)
-  if (hasMembershipAfter && removedDiscord) return remove(after)
+  if (hasMembershipAfter && addedDiscord)
+    return give(after, 'Added discord to membership account.')
+  if (hasMembershipAfter && removedDiscord)
+    return remove(before, 'Remove discord from a membership account.')
   if (hasMembershipAfter && hasDiscordChanged)
-    return Promise.all([remove(before), give(after)])
+    return Promise.all([
+      remove(before, 'Transferring membership'),
+      give(after, 'Transferred membership')
+    ])
 }

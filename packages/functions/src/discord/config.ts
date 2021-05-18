@@ -1,2 +1,8 @@
-export const discordPublicKey =
-  'a135d150422f0fc80f03392f6163190184dd4391fe568f0c830346fe98b10d73'
+import * as functions from 'firebase-functions'
+
+const config = functions.config()
+
+export const discordPublicKey = config.discord.publickey
+export const discordBotToken = config.discord.token
+export const discordGuild = config.discord.guild
+export const discordRole = config.discord.role

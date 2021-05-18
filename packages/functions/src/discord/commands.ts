@@ -58,7 +58,6 @@ export const discordCommands = functions.https.onRequest(
     }
 
     const unlink = async () => {
-      privateMessage(`Your account is not associated with any account.`)
       try {
         await unlinkAccount(user)
         privateMessage('Successfully unlinked your account.')
