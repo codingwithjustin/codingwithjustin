@@ -17,7 +17,7 @@
   "dependencies": {
     "discord.js": "^12.5.3",
     "firebase-admin": "^9.2.0",
-    "firebase-functions": "^3.11.0",
+    "firebase-functions": "^3.14.0",
     "stripe": "^8.148.0",
     "tweetnacl": "^1.0.3"
   },

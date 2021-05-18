@@ -7,7 +7,12 @@ export const userNewSetup = functions.firestore
     const before = change.before.data() as User
     const after = change.after.data() as User
 
+    const hasMembership = after.membership != null
+    const wasMembership = before.membership != null && !hasMembership
+
     const changedDiscordAccount = before.discord?.id === after.discord?.id
+    // if (changedDiscordAccount) {
+    // }
     const changedMembership =
       before.membership?.status === after.membership?.status
 
