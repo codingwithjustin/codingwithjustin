@@ -10,14 +10,20 @@ import {
   VStack,
   Image,
   Text,
-  Flex
+  Flex,
+  BoxProps,
+  Heading,
+  SimpleGrid,
+  AccordionItem,
+  AccordionPanel,
+  Spacer
 } from '@chakra-ui/react'
-import { Content } from '@shared/firestore'
+import { Content, Course } from '@shared/firestore'
 import React from 'react'
 import { Card } from '../Card'
 import { ContentFakeThumbnail } from './ContentThumbnail'
 import NextLink from 'next/link'
-import { FaLock } from 'react-icons/fa'
+import { FaCheck, FaLock } from 'react-icons/fa'
 import { YouTubeVideo } from '../Youtube'
 import { ContentTag } from './ContentCard'
 import {
@@ -26,6 +32,14 @@ import {
   TwitterButton,
   YoutubeButton
 } from '../SocialMedia'
+import {
+  CourseFreeTag,
+  CourseSecondsTag,
+  CourseToc,
+  CourseTocContentButton,
+  CourseTocSection
+} from '../Courses'
+import { formatSeconds } from '@/utils'
 
 const VideoPaywall: React.FC<{ content: Content }> = props => {
   const { content } = props
@@ -128,5 +142,76 @@ export const ContentPageCard: React.FC<{
         </Flex>
       </Box>
     </Card>
+  )
+}
+
+export const ContentPageWhatYoullLearn: React.FC<
+  BoxProps & { learn: string[] }
+> = ({ learn, ...props }) => {
+  return (
+    <Box as="section" my={12} {...props}>
+      <Heading as="h2" mb={5}>
+        What you&lsquo;ll learn
+      </Heading>
+
+      <SimpleGrid
+        p={5}
+        px={6}
+        mt={2}
+        rounded="md"
+        borderWidth="1px"
+        columns={2}
+        spacing={3}
+      >
+        {learn.map(c => (
+          <Flex key={c}>
+            <Icon as={FaCheck} color="green.200" mt={1} />
+            <Text ml={4}>{c}</Text>
+          </Flex>
+        ))}
+      </SimpleGrid>
+    </Box>
+  )
+}
+
+export const ContentPageCourseToc: React.FC<{ content: Course }> = ({
+  content
+}) => {
+  return (
+    <Box as="section" my={12}>
+      <Heading as="h2" mb={5}>
+        Content
+      </Heading>
+      <CourseToc rounded="md" borderWidth="1px">
+        {content.children.map((s, i) => (
+          <AccordionItem
+            key={i}
+            borderBottomWidth="0 !important"
+            borderTopWidth={i === 0 ? 0 : 1}
+          >
+            <CourseTocSection section={s}></CourseTocSection>
+            <AccordionPanel>
+              {s.content.map(c => (
+                <CourseTocContentButton
+                  content={{ ...c, course: content, section: s }}
+                  key={c.slug}
+                >
+                  <Text mx={3} isTruncated>
+                    {c.title}
+                  </Text>
+                  <Spacer />
+                  {!c.premium && <CourseFreeTag />}
+                  {c.type === 'video' && (
+                    <CourseSecondsTag>
+                      {formatSeconds(c.seconds)}
+                    </CourseSecondsTag>
+                  )}
+                </CourseTocContentButton>
+              ))}
+            </AccordionPanel>
+          </AccordionItem>
+        ))}
+      </CourseToc>
+    </Box>
   )
 }

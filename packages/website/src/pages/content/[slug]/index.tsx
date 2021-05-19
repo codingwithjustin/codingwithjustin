@@ -12,7 +12,8 @@ import {
   ModalContent,
   useColorModeValue,
   BoxProps,
-  HeadingProps
+  HeadingProps,
+  Tag
 } from '@chakra-ui/react'
 import React, { useEffect, useState } from 'react'
 import { GetStaticPaths, GetStaticProps, NextPage } from 'next'
@@ -30,7 +31,11 @@ import { doc } from 'firebase/firestore'
 import { useAuthState, useUserData } from '@/firebase'
 import { NextSeo } from 'next-seo'
 import { Card } from '@/components/Card'
-import { ContentPageCard } from '@/components/content/ContentHeading'
+import {
+  ContentPageCard,
+  ContentPageCourseToc,
+  ContentPageWhatYoullLearn
+} from '@/components/content/ContentPage'
 
 const ProBanner: React.FC = () => {
   return (
@@ -109,6 +114,7 @@ const TableOfContents: React.FC<TableOfContentsProps> = props => {
       >
         {content.title}
       </Text>
+
       {headings.map((h: any, i) => (
         <Text
           key={i}
@@ -154,13 +160,28 @@ const ContentPage: NextPage<ContentPageProps> = props => {
         openGraph={{ title, description }}
       />
       <LayoutContainer maxW="6xl">
+        {content.draft && (
+          <Tag colorScheme="purple" size="lg">
+            DRAFT
+          </Tag>
+        )}
         <ContentHeading>{content.title}</ContentHeading>
         <Flex>
           <Box flexGrow={1}>
             <ContentPageCard content={content} />
-            <Box as="section" py={12}>
+
+            {'learn' in content && (
+              <ContentPageWhatYoullLearn learn={content.learn} />
+            )}
+
+            {content.type === 'course' && (
+              <ContentPageCourseToc content={content} />
+            )}
+
+            <Box as="section" my={12}>
               <MDXRemote {...mdx} />
             </Box>
+
             {!hasMembership && <ProBanner />}
           </Box>
 

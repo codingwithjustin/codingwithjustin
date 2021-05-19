@@ -66,6 +66,7 @@ export interface Course extends BaseContent {
   type: 'course'
   vimeoId: string
   children: CourseSection[]
+  learn: string[]
 }
 
 export type Content = Course | Video

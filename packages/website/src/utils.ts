@@ -23,3 +23,15 @@ export const formatMoney = (amount: number, currency: string) => {
   })
   return formatter.format(amount / 100)
 }
+
+export const formatSeconds = (secNum: number) => {
+  const hours = Math.floor(secNum / 3600)
+  const minutes = Math.floor(secNum / 60) % 60
+  const seconds = secNum % 60
+
+  return [hours, minutes, seconds]
+    .map(v => (v < 10 ? '0' + v : v))
+    .filter((v, i) => v !== '00' || i > 0)
+    .join(':')
+    .replace(/^0+|0+$/g, '')
+}

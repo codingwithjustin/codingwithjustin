@@ -12,7 +12,7 @@ export const DiscordInfo: React.FC<{ discord: UsersDiscord }> = ({
   return (
     <Flex alignItems="center">
       <Avatar src={avatarUrl} />
-      <Box ml={3}>
+      <Box ml={5}>
         <Text fontSize="lg" fontWeight="bold">
           {discord.username}
         </Text>
@@ -27,9 +27,8 @@ export const DiscordInfo: React.FC<{ discord: UsersDiscord }> = ({
 export const SettingsDiscord: React.FC = () => {
   const { user } = useAuthState()
   const userData = useUserData()
-  if (userData == null || user == null) {
-    return <div></div>
-  }
+
+  if (userData == null || user == null) return <div></div>
   return (
     <SettingsCard>
       <SettingsHeading

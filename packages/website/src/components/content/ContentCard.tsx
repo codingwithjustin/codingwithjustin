@@ -17,6 +17,7 @@ import { TextMuted } from '../TextMuted'
 import { contentThumbnail, formatPublishedAt, url } from '../../content'
 import { Content } from '@shared/firestore'
 import { ContentFakeThumbnail } from './ContentThumbnail'
+import { formatSeconds } from '@/utils'
 
 export interface ContentCardProps extends BoxProps {
   content: Content
@@ -53,17 +54,6 @@ const MembershipTag: React.FC<TagProps> = props => (
     $
   </ContentTag>
 )
-
-const formatSeconds = (secNum: number) => {
-  const hours = Math.floor(secNum / 3600)
-  const minutes = Math.floor(secNum / 60) % 60
-  const seconds = secNum % 60
-
-  return [hours, minutes, seconds]
-    .map(v => (v < 10 ? '0' + v : v))
-    .filter((v, i) => v !== '00' || i > 0)
-    .join(':')
-}
 
 export const HContentCard: React.FC<ContentCardProps> = props => {
   const { content, ...boxProps } = props

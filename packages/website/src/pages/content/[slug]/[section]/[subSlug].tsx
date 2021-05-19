@@ -15,7 +15,7 @@ import {
 import { Content, Course, CourseSection } from '@shared/firestore'
 import { GetStaticPaths, GetStaticProps, NextPage } from 'next'
 import { CourseContentContext, CourseSidebar } from '@/components/Courses'
-import { ContentPageCard } from '@/components/content/ContentHeading'
+import { ContentPageCard } from '@/components/content/ContentPage'
 import { FaAngleLeft, FaAngleRight, FaCheck, FaHome } from 'react-icons/fa'
 import NextLink from 'next/link'
 
