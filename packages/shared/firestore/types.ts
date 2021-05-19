@@ -31,7 +31,7 @@ export interface User {
 }
 
 export interface BaseContent {
-  id: string
+  id?: string
   type: string
   title: string
   slug: string
@@ -43,6 +43,9 @@ export interface BaseContent {
   level?: 'beginner' | 'intermediate' | 'advanced'
   publishedAt: number
   premium?: boolean
+
+  course?: Course
+  section?: CourseSection
 }
 
 export interface Video extends BaseContent {

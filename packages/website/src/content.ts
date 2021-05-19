@@ -5,7 +5,7 @@ import {
   orderBy,
   query
 } from '@firebase/firestore'
-import { Content, Course, Video } from '@shared/firestore'
+import { Content, Course, CourseSection, Video } from '@shared/firestore'
 import { matchSorter } from 'match-sorter'
 import { formatTimestamp } from './utils'
 
@@ -22,15 +22,46 @@ export const get = async () => {
   return content
 }
 
+export const isVideo = (a: Content): a is Video => a.type === 'video'
+export const isCourse = (a: Content): a is Course => a.type === 'course'
+
 export class ContentFilter {
   static async content() {
     return new ContentFilter(await get())
   }
 
   content: Content[]
+  // Boolean for knowing if the content is already flattened
+  isContentFlat: boolean
 
   constructor(content: Content[]) {
-    this.content = content
+    this.content = [...content]
+    this.isContentFlat = false
+  }
+
+  flatten() {
+    if (this.isContentFlat) return this
+    this.isContentFlat = true
+    for (const [course, section, content] of this.iterateCourseContent()) {
+      this.content.push({
+        ...content,
+        premium: course.premium,
+        course,
+        section
+      })
+    }
+    return this
+  }
+
+  *iterateCourseContent() {
+    for (const c of this.content) {
+      if (!isCourse(c)) continue
+      for (const s of c.children) {
+        for (const v of s.content) {
+          yield [c, s, v] as [Course, CourseSection, Content]
+        }
+      }
+    }
   }
 
   findBySlug(slug: string) {
@@ -119,14 +150,23 @@ export class ContentFilter {
   }
 }
 
-export const isVideo = (a: Content): a is Video => a.type === 'video'
-export const isCourse = (a: Content): a is Course => a.type === 'course'
-
 export const contentThumbnail = (c: Content) =>
   'youtubeId' in c
     ? `https://i.ytimg.com/vi/${c.youtubeId}/maxresdefault.jpg`
     : c.thumbnail
 
-export const url = ({ slug }: Content) => `/content/${slug}`
+export const url = ({
+  section,
+  course,
+  slug
+}: {
+  section?: CourseSection
+  course?: Course
+  slug: string
+}) => {
+  if (section != null && course != null)
+    return `/content/${course.slug}/${section.slug}/${slug}`
+  return `/content/${slug}`
+}
 
 export const formatPublishedAt = (c: Content) => formatTimestamp(c.publishedAt)

@@ -73,8 +73,9 @@ const Search: NextPage<{ content: Content[] }> = ({ content }) => {
 export const getStaticProps: GetStaticProps<{ content: Content[] }> =
   async () => {
     const content = await ContentFilter.content()
+    const contentFlattened = content.flatten()
     return {
-      props: { content: content.get() }
+      props: { content: contentFlattened.get() }
     }
   }
 

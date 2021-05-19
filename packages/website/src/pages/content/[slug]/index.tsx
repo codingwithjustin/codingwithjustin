@@ -1,5 +1,4 @@
 import {
-  Image,
   Box,
   Flex,
   Heading,
@@ -12,17 +11,12 @@ import {
   ModalOverlay,
   ModalContent,
   useColorModeValue,
-  AspectRatio,
-  Icon,
-  Center,
-  VStack,
   BoxProps,
   HeadingProps
 } from '@chakra-ui/react'
 import React, { useEffect, useState } from 'react'
-import { YouTubeVideo } from '@/components/Youtube'
 import { GetStaticPaths, GetStaticProps, NextPage } from 'next'
-import { ContentFilter, contentThumbnail, formatPublishedAt } from '@/content'
+import { ContentFilter } from '@/content'
 import { Content } from '@shared/firestore'
 import { serialize } from 'next-mdx-remote/serialize'
 import { MDXRemote, MDXRemoteSerializeResult } from 'next-mdx-remote'
@@ -34,17 +28,9 @@ import { useDocumentOnce } from '@/firebase/firestore'
 import { getFirestore, setDoc } from '@firebase/firestore'
 import { doc } from 'firebase/firestore'
 import { useAuthState, useUserData } from '@/firebase'
-import {
-  DiscordButton,
-  GitHubPersonalButton,
-  TwitterButton,
-  YoutubeButton
-} from '@/components/SocialMedia'
-import { ContentTag } from '@/components/content/ContentCard'
-import { FaLock } from 'react-icons/fa'
 import { NextSeo } from 'next-seo'
-import NextLink from 'next/link'
 import { Card } from '@/components/Card'
+import { ContentPageCard } from '@/components/content/ContentHeading'
 
 const ProBanner: React.FC = () => {
   return (
@@ -93,36 +79,6 @@ const EditBody: React.FC<{ contentId: string }> = ({ contentId }) => {
         </ModalContent>
       </Modal>
     </>
-  )
-}
-
-const VideoPaywall: React.FC<{ content: Content }> = props => {
-  const { content } = props
-  const thumbnail = contentThumbnail(content)
-  const premiumOverlays = useColorModeValue('whiteAlpha.700', 'blackAlpha.800')
-  return (
-    <AspectRatio ratio={16 / 9} rounded="md" top={0} left={0}>
-      <Box position="relative">
-        <Image roundedTopLeft="md" roundedTopRight="md" src={thumbnail} />
-        <Center
-          bgColor={premiumOverlays}
-          roundedTopLeft="md"
-          roundedTopRight="md"
-          w="full"
-          h="full"
-          position="absolute"
-        >
-          <VStack spacing={5}>
-            <Icon as={FaLock} fontSize="8rem" color="green.500" />
-            <NextLink href="/pricing" passHref>
-              <Button as="a" colorScheme="green" size="lg">
-                Become a member
-              </Button>
-            </NextLink>
-          </VStack>
-        </Center>
-      </Box>
-    </AspectRatio>
   )
 }
 
@@ -187,9 +143,9 @@ const ContentHeading: React.FC<HeadingProps> = props => (
 
 const ContentPage: NextPage<ContentPageProps> = props => {
   const { content, mdx, headings } = props
-  const { type, premium, title, description } = content
+  const { title, description } = content
   const { isAdmin } = useAuthState()
-  const { hasAccess, hasMembership } = useUserData()
+  const { hasMembership } = useUserData()
   return (
     <>
       <NextSeo
@@ -201,67 +157,17 @@ const ContentPage: NextPage<ContentPageProps> = props => {
         <ContentHeading>{content.title}</ContentHeading>
         <Flex>
           <Box flexGrow={1}>
-            <Card>
-              <Box position="relative">
-                {premium && !hasAccess(content) ? (
-                  <>{type == 'video' && <VideoPaywall content={content} />}</>
-                ) : (
-                  <>
-                    {'youtubeId' in content &&
-                      typeof content.youtubeId === 'string' && (
-                        <YouTubeVideo id={content.youtubeId} />
-                      )}
-                  </>
-                )}
-              </Box>
-
-              <Box p={5}>
-                <Text fontSize="lg" noOfLines={4}>
-                  {content.description}
-                </Text>
-
-                <Box my={5}>
-                  {content.tags.map(t => (
-                    <ContentTag key={t}>{t}</ContentTag>
-                  ))}
-                </Box>
-
-                <Flex pt={2}>
-                  <Image
-                    flexShrink={0}
-                    rounded="full"
-                    mr={5}
-                    src={
-                      'https://yt3.ggpht.com/ytc/AAUvwnjRLyTU3teRL40o0yGEKAIp7fdv3H83gSv6r8zVYw=s48-c-k-c0x00ffffff-no-rj'
-                    }
-                  />
-                  <Box flexGrow={1}>
-                    <Text fontSize="lg" fontWeight="bold" letterSpacing="wide">
-                      Justin Brooks
-                    </Text>
-                    <Text>{formatPublishedAt(content)}</Text>
-                  </Box>
-                  <Box>
-                    <GitHubPersonalButton size="lg" />
-                    <YoutubeButton size="lg" />
-                    <DiscordButton size="lg" />
-                    <TwitterButton size="lg" />
-                  </Box>
-                </Flex>
-              </Box>
-            </Card>
-
+            <ContentPageCard content={content} />
             <Box as="section" py={12}>
               <MDXRemote {...mdx} />
             </Box>
-
             {!hasMembership && <ProBanner />}
           </Box>
 
           <Box w={350} flexShrink={0} ml={6}>
             <Box position="sticky" top={5}>
               <TableOfContents content={content} headings={headings} />
-              {isAdmin && <EditBody contentId={content.id} />}
+              {isAdmin && content.id && <EditBody contentId={content.id} />}
             </Box>
           </Box>
         </Flex>

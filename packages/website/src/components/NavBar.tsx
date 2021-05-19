@@ -1,3 +1,4 @@
+import { url } from '@/content'
 import {
   Avatar,
   Box,
@@ -36,6 +37,7 @@ import React from 'react'
 import { FaBars } from 'react-icons/fa'
 import { useAuthState } from '../firebase'
 import { SignInButton } from './Auth'
+import { useCourseContent } from './Courses'
 import { DarkModeSwitch } from './DarkModeSwitch'
 import { SearchInput } from './SearchInput'
 
@@ -192,20 +194,24 @@ export const NavBar: React.FC<FlexProps> = props => {
 export const NavbarCourses: React.FC = ({ children }) => {
   const { isLoggedIn } = useAuthState()
   const isMd = useBreakpointValue({ base: true, lg: false })
+  const { course, section, content } = useCourseContent()
   return (
     <NavBarContainer>
       <Brand />
-
       <Breadcrumb ml={3}>
         <BreadcrumbItem>
-          <BreadcrumbLink>Courses</BreadcrumbLink>
+          <NextLink href={url(course)} passHref>
+            <BreadcrumbLink>{course.title}</BreadcrumbLink>
+          </NextLink>
         </BreadcrumbItem>
         <BreadcrumbItem>
-          <BreadcrumbLink>Test Course</BreadcrumbLink>
+          <BreadcrumbLink>{section.name}</BreadcrumbLink>
         </BreadcrumbItem>
-        <BreadcrumbItem>
-          <BreadcrumbLink>Introduction</BreadcrumbLink>
-        </BreadcrumbItem>
+        {!isMd && (
+          <BreadcrumbItem isCurrentPage>
+            <BreadcrumbLink>{content.title}</BreadcrumbLink>
+          </BreadcrumbItem>
+        )}
       </Breadcrumb>
       <Spacer />
       <Box flexShrink={0} mr={2}>

@@ -14,8 +14,9 @@ import {
 import React from 'react'
 import NextLink from 'next/link'
 import { TextMuted } from '../TextMuted'
-import { contentThumbnail, formatPublishedAt } from '../../content'
+import { contentThumbnail, formatPublishedAt, url } from '../../content'
 import { Content } from '@shared/firestore'
+import { ContentFakeThumbnail } from './ContentThumbnail'
 
 export interface ContentCardProps extends BoxProps {
   content: Content
@@ -66,12 +67,12 @@ const formatSeconds = (secNum: number) => {
 
 export const HContentCard: React.FC<ContentCardProps> = props => {
   const { content, ...boxProps } = props
-  const { type, title, description, tags, premium, slug } = content
+  const { type, title, description, tags, premium } = content
 
   const thumbnail = contentThumbnail(content)
 
   return (
-    <NextLink href={`/content/${slug}`}>
+    <NextLink href={url(content)}>
       <Flex
         m={2}
         rounded="md"
@@ -83,7 +84,11 @@ export const HContentCard: React.FC<ContentCardProps> = props => {
         <Box>
           <Box position="relative">
             <AspectRatio w={275} ratio={16 / 9} flexShrink={0}>
-              <Image src={thumbnail} alt={title} rounded="md" />
+              {thumbnail ? (
+                <Image src={thumbnail} alt={title} rounded="md" />
+              ) : (
+                <ContentFakeThumbnail rounded="md" content={content} />
+              )}
             </AspectRatio>
             {'seconds' in content && (
               <Tag
@@ -125,10 +130,10 @@ export const HContentCard: React.FC<ContentCardProps> = props => {
 
 export const VContentCard: React.FC<ContentCardProps> = props => {
   const { content, ...boxProps } = props
-  const { title, description, tags, premium, slug } = content
+  const { title, description, tags, premium } = content
   const thumbnail = contentThumbnail(content)
   return (
-    <NextLink href={`/content/${slug}`} passHref>
+    <NextLink href={url(content)} passHref>
       <LinkBox
         rounded="md"
         bgColor={useColorModeValue('white', 'gray.700')}
@@ -137,13 +142,22 @@ export const VContentCard: React.FC<ContentCardProps> = props => {
         cursor="pointer"
         {...boxProps}
       >
-        <Image
-          src={thumbnail}
-          alt={title}
-          w="full"
-          roundedTopLeft="md"
-          roundedTopRight="md"
-        />
+        <AspectRatio ratio={16 / 9}>
+          {thumbnail ? (
+            <Image
+              src={thumbnail}
+              alt={title}
+              roundedTopLeft="md"
+              roundedTopRight="md"
+            />
+          ) : (
+            <ContentFakeThumbnail
+              roundedTopLeft="md"
+              roundedTopRight="md"
+              content={content}
+            />
+          )}
+        </AspectRatio>
         <Box p={5}>
           <Text fontSize="lg" mb={1} fontWeight="bold" noOfLines={2}>
             {title}
@@ -153,7 +167,6 @@ export const VContentCard: React.FC<ContentCardProps> = props => {
           </Text>
           <Box>
             {premium && <MembershipTag />}
-
             {tags?.map((t, i) => (
               <ContentTag key={i}>{t}</ContentTag>
             ))}

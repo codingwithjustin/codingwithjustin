@@ -1,151 +1,149 @@
+import React from 'react'
 import { LayoutRightSidebar } from '@/components/Layout'
 import { NavbarCourses } from '@/components/NavBar'
-import { ContentFilter, isCourse } from '@/content'
-import { Breadcrumb, BreadcrumbItem } from '@chakra-ui/breadcrumb'
+import { ContentFilter, isCourse, url } from '@/content'
 import {
-  Accordion,
-  AccordionButton,
-  AccordionIcon,
-  AccordionItem,
-  AccordionPanel,
-  Box,
-  BreadcrumbLink,
   Button,
+  Container,
+  Flex,
+  Heading,
+  HeadingProps,
   Icon,
-  Link,
-  Spacer,
-  Tag,
-  Text
+  Text,
+  Spacer
 } from '@chakra-ui/react'
-import NextLink from 'next/link'
 import { Content, Course, CourseSection } from '@shared/firestore'
 import { GetStaticPaths, GetStaticProps, NextPage } from 'next'
-import React from 'react'
-import { FaVideo } from 'react-icons/fa'
+import { CourseContentContext, CourseSidebar } from '@/components/Courses'
+import { ContentPageCard } from '@/components/content/ContentHeading'
+import { FaAngleLeft, FaAngleRight, FaCheck, FaHome } from 'react-icons/fa'
+import NextLink from 'next/link'
 
 interface ContentChildrenProps {
-  root: Course
+  course: Course
   section: CourseSection
   content: Content
 }
 
+const ContentTitle: React.FC<HeadingProps> = props => (
+  <Heading as="h1" mb={8} fontSize={{ base: '3xl', lg: '4xl' }} {...props} />
+)
+
+const getNext = (
+  course: Course,
+  section: CourseSection,
+  content: Content
+): Content | null => {
+  const idx = section.content.findIndex(c => c.slug === content.slug)
+  if (idx + 1 < section.content.length)
+    return { ...section.content[idx + 1], course, section }
+
+  const sectionIdx = course.children.findIndex(s => s.slug === section.slug)
+  if (sectionIdx + 1 < course.children.length) {
+    const nextSection = course.children[sectionIdx + 1]
+    return nextSection.content[0]
+      ? { ...nextSection.content[0], course, section }
+      : null
+  }
+  return null
+}
+
+const getPrevious = (
+  course: Course,
+  section: CourseSection,
+  content: Content
+): Content | null => {
+  const idx = section.content.findIndex(c => c.slug === content.slug)
+  if (idx - 1 >= 0) return { ...section.content[idx - 1], course, section }
+  const sectionIdx = course.children.findIndex(s => s.slug === section.slug)
+  if (sectionIdx - 1 >= 0) {
+    const previousSection = course.children[sectionIdx - 1]
+    return previousSection.content[previousSection.content.length - 1]
+      ? {
+          ...previousSection.content[previousSection.content.length - 1],
+          course,
+          section: previousSection
+        }
+      : null
+  }
+  return null
+}
+
 const ContentChildren: NextPage<ContentChildrenProps> = props => {
-  const { root, section, content } = props
+  const { course, section, content } = props
+
+  const nextContent = getNext(course, section, content)
+  const previousContent = getPrevious(course, section, content)
 
   return (
-    <LayoutRightSidebar
-      sidebar={
-        <Box w={450}>
-          <Box px={8} pb={5} pt={8}>
-            <Link
-              href={`/content/${root.slug}`}
-              fontWeight="bold"
-              color="blue.300"
-              fontSize="3xl"
-            >
-              {root.title}
-            </Link>
-          </Box>
-          <Accordion
-            allowMultiple
-            size="lg"
-            defaultIndex={root.children.map((_, i) => i)}
-          >
-            {root.children.map((s, i) => (
-              <AccordionItem key={s.slug}>
-                <AccordionButton px={8}>
-                  <Text key={s.slug} fontWeight="bold" fontSize="xl">
-                    {i + 1} {s.name}
-                  </Text>
-                  <Spacer />
-                  <AccordionIcon />
-                </AccordionButton>
-                <AccordionPanel px={5}>
-                  {s.content.map((c, x) => (
-                    <NextLink
-                      key={c.slug}
-                      href={`/content/${root.slug}/${s.slug}/${c.slug}`}
-                      passHref
+    <CourseContentContext.Provider value={{ course, section, content }}>
+      <LayoutRightSidebar sidebar={<CourseSidebar />} navbar={NavbarCourses}>
+        <Container maxW="4xl" my={10}>
+          <ContentTitle mb={10}>{content.title}</ContentTitle>
+          <ContentPageCard
+            content={content}
+            descriptionHeader={
+              <Flex mb={4}>
+                {previousContent ? (
+                  <NextLink href={url(previousContent)}>
+                    <Button as="a" variant="ghost" size="sm" mr={5}>
+                      <Icon as={FaAngleLeft} mr={2} />
+                      <Text isTruncated>{previousContent?.title}</Text>
+                    </Button>
+                  </NextLink>
+                ) : (
+                  <NextLink href={url(course)} passHref>
+                    <Button
+                      as="a"
+                      variant="ghost"
+                      size="sm"
+                      colorScheme="green"
                     >
-                      <Button
-                        colorScheme={
-                          c.slug === content.slug ? 'green' : undefined
-                        }
-                        justifyContent="left"
-                        as="a"
-                        isFullWidth
-                        px={5}
-                        py={2}
-                        my={0.5}
-                        variant="ghost"
-                        isActive={c.slug === content.slug}
-                      >
-                        <Icon as={FaVideo} />
-                        <Text mx={3} isTruncated>
-                          {i + 1}.{x + 1} {c.title} and a really long title
-                        </Text>
-                        <Spacer />
-                        <Tag
-                          colorScheme="green"
-                          ml={1}
-                          size="sm"
-                          flexShrink={0}
-                        >
-                          Free
-                        </Tag>
-                        <Tag
-                          colorScheme={
-                            c.slug === content.slug ? 'green' : undefined
-                          }
-                          size="sm"
-                          ml={1}
-                          flexShrink={0}
-                        >
-                          11:20
-                        </Tag>
-                      </Button>
-                    </NextLink>
-                  ))}
-                </AccordionPanel>
-              </AccordionItem>
-            ))}
-          </Accordion>
-        </Box>
-      }
-      navbar={NavbarCourses}
-    >
-      <Breadcrumb>
-        <BreadcrumbItem>
-          <BreadcrumbLink href="#">{root.title}</BreadcrumbLink>
-        </BreadcrumbItem>
-        <BreadcrumbItem>
-          <BreadcrumbLink href="#">{section.name}</BreadcrumbLink>
-        </BreadcrumbItem>
-        <BreadcrumbItem>
-          <BreadcrumbLink href="#">{content.title}</BreadcrumbLink>
-        </BreadcrumbItem>
-      </Breadcrumb>
-    </LayoutRightSidebar>
+                      <Icon as={FaHome} mr={2} />
+                      Overview
+                    </Button>
+                  </NextLink>
+                )}
+
+                <Spacer />
+
+                {nextContent ? (
+                  <NextLink href={url(nextContent)}>
+                    <Button as="a" variant="ghost" size="sm" ml={5}>
+                      <Text isTruncated>{nextContent?.title}</Text>
+                      <Icon as={FaAngleRight} ml={2} />
+                    </Button>
+                  </NextLink>
+                ) : (
+                  <NextLink href={url(course)} passHref>
+                    <Button
+                      as="a"
+                      variant="ghost"
+                      size="sm"
+                      colorScheme="green"
+                    >
+                      Done!
+                      <Icon as={FaCheck} ml={2} />
+                    </Button>
+                  </NextLink>
+                )}
+              </Flex>
+            }
+          />
+        </Container>
+      </LayoutRightSidebar>
+    </CourseContentContext.Provider>
   )
 }
 
 export const getStaticPaths: GetStaticPaths = async () => {
   const content = await ContentFilter.content()
-  const pages = []
-
-  for (const r of content.get()) {
-    if (!isCourse(r)) continue
-    for (const s of r.children) {
-      for (const x of s.content) {
-        pages.push([r, s, x])
-      }
-    }
-  }
+  const pages = Array.from(content.iterateCourseContent())
 
   return {
-    paths: pages.map(([root, section, content]) => ({
+    paths: pages.map(([course, section, content]) => ({
       params: {
-        slug: root.slug,
+        slug: course.slug,
         section: section.slug,
         subSlug: content.slug
       }
@@ -161,16 +159,16 @@ export const getStaticProps: GetStaticProps<
   const { slug, section: sectionSlug, subSlug } = params ?? {}
 
   const allContent = await ContentFilter.content()
-  const root = allContent.get().find(c => c.slug === slug)
-  if (root == null || !isCourse(root))
+  const course = allContent.get().find(c => c.slug === slug)
+  if (course == null || !isCourse(course))
     throw new Error(`Content is not a course (${params}).`)
 
-  const section = root?.children.find(s => s.slug === sectionSlug)
+  const section = course?.children.find(s => s.slug === sectionSlug)
   const content = section?.content.find(c => c.slug === subSlug)
-  if (root == null || section == null || content == null)
+  if (course == null || section == null || content == null)
     throw new Error(`Content is missing (${params}).`)
 
-  return { props: { root, section, content } }
+  return { props: { course, section, content } }
 }
 
 export default ContentChildren
