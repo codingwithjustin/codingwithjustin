@@ -42,7 +42,7 @@ export const ContentTag: React.FC<TagProps & { href?: string }> = props => {
   }
   return (
     <NextLink href={props.href ?? `/tag/${props.children}`}>
-      <Tag m={1} colorScheme={getColor()} {...props} cursor="pointer"></Tag>
+      <Tag m={0.5} colorScheme={getColor()} {...props} cursor="pointer"></Tag>
     </NextLink>
   )
 }
@@ -102,19 +102,19 @@ export const HContentCard: React.FC<ContentCardProps> = props => {
           </Box>
         </Box>
         <Box marginLeft={4} flexGrow={1} h="full">
-          <Heading fontSize="xl" noOfLines={2}>
+          <Heading fontSize="xl" noOfLines={2} mb={1}>
             {title}
           </Heading>
-          <Text noOfLines={3}>{description}</Text>
+          <Text noOfLines={2} mb={2}>
+            {description}
+          </Text>
 
           {premium && <MembershipTag />}
-          <ContentTag ml={0}>{type}</ContentTag>
+          <ContentTag>{type}</ContentTag>
           {tags?.map((t, i) => (
-            <ContentTag key={i} m={1}>
-              {t}
-            </ContentTag>
+            <ContentTag key={i}>{t}</ContentTag>
           ))}
-          <TextMuted fontSize="sm">
+          <TextMuted fontSize="sm" mt={2}>
             Justin Brooks • {formatPublishedAt(content)}
           </TextMuted>
         </Box>
@@ -155,9 +155,7 @@ export const VContentCard: React.FC<ContentCardProps> = props => {
             {premium && <MembershipTag />}
 
             {tags?.map((t, i) => (
-              <ContentTag key={i} m={1}>
-                {t}
-              </ContentTag>
+              <ContentTag key={i}>{t}</ContentTag>
             ))}
           </Box>
         </Box>

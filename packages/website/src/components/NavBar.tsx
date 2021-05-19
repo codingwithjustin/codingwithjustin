@@ -1,6 +1,9 @@
 import {
   Avatar,
   Box,
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
   Button,
   ButtonProps,
   Divider,
@@ -8,9 +11,9 @@ import {
   DrawerBody,
   DrawerCloseButton,
   DrawerContent,
-  DrawerFooter,
   DrawerHeader,
   DrawerOverlay,
+  DrawerProps,
   Flex,
   FlexProps,
   Heading,
@@ -69,8 +72,10 @@ const NavButton: React.FC<ButtonProps & { href: string }> = props => {
   )
 }
 
-const NavDrawer: React.FC = () => {
-  const { isAdmin } = useAuthState()
+const NavDrawer: React.FC<Omit<DrawerProps, 'isOpen' | 'onClose'>> = ({
+  children,
+  ...drawerProps
+}) => {
   const { isOpen, onOpen, onClose } = useDisclosure()
   return (
     <>
@@ -82,40 +87,37 @@ const NavDrawer: React.FC = () => {
         onClick={onOpen}
         aria-label="Navbar menu"
       />
-      <Drawer isOpen={isOpen} placement="right" onClose={onClose} size="lg">
+      <Drawer
+        placement="right"
+        size="lg"
+        {...drawerProps}
+        onClose={onClose}
+        isOpen={isOpen}
+      >
         <DrawerOverlay />
-        <DrawerContent>
-          <DrawerCloseButton />
-          <DrawerHeader fontSize="2xl">CWJ</DrawerHeader>
-
-          <DrawerBody>
-            <VStack textAlign="left">
-              <NavButton href="/" isFullWidth>
-                Home
-              </NavButton>
-              <NavButton href="/videos" isFullWidth>
-                Videos
-              </NavButton>
-              <NavButton href="/courses" isFullWidth>
-                Courses
-              </NavButton>
-              <NavButton href="/pricing" isFullWidth>
-                Pricing
-              </NavButton>
-              {isAdmin && (
-                <NavButton href="/pricing" isFullWidth colorScheme="red">
-                  Admin
-                </NavButton>
-              )}
-              <Divider />
-              <DarkModeSwitch />
-            </VStack>
-          </DrawerBody>
-
-          <DrawerFooter></DrawerFooter>
-        </DrawerContent>
+        <DrawerContent>{children}</DrawerContent>
       </Drawer>
     </>
+  )
+}
+
+const NavBarContainer: React.FC<FlexProps> = props => (
+  <Flex
+    alignItems="center"
+    px={{ base: 5 }}
+    bgColor={useColorModeValue('white', 'gray.700')}
+    shadow="sm"
+    height={16}
+    {...props}
+  />
+)
+
+const Brand: React.FC = () => {
+  const isMd = useBreakpointValue({ base: true, lg: false })
+  return (
+    <Heading fontSize="xl" mr={5}>
+      <NextLink href="/">{isMd ? 'CWJ' : 'Coding With Justin'}</NextLink>
+    </Heading>
   )
 }
 
@@ -125,17 +127,8 @@ export const NavBar: React.FC<FlexProps> = props => {
   const isSmall = useBreakpointValue({ base: true, md: false })
   const isMd = useBreakpointValue({ base: true, lg: false })
   return (
-    <Flex
-      {...props}
-      alignItems="center"
-      px={{ base: 5 }}
-      bgColor={useColorModeValue('white', 'gray.700')}
-      shadow="sm"
-      height={16}
-    >
-      <Heading fontSize="xl" mr={5}>
-        <NextLink href="/">{isMd ? 'CWJ' : 'Coding With Justin'}</NextLink>
-      </Heading>
+    <NavBarContainer {...props}>
+      <Brand />
 
       {!isSmall && (
         <Box>
@@ -162,7 +155,73 @@ export const NavBar: React.FC<FlexProps> = props => {
           <SignInButton mr={2} variant="outline" colorScheme="green" />
         )}
       </Box>
-      {isSmall && <NavDrawer />}
-    </Flex>
+      {isSmall && (
+        <NavDrawer>
+          <DrawerCloseButton />
+          <DrawerHeader fontSize="2xl">CWJ</DrawerHeader>
+
+          <DrawerBody>
+            <VStack textAlign="left">
+              <NavButton href="/" isFullWidth>
+                Home
+              </NavButton>
+              <NavButton href="/videos" isFullWidth>
+                Videos
+              </NavButton>
+              <NavButton href="/courses" isFullWidth>
+                Courses
+              </NavButton>
+              <NavButton href="/pricing" isFullWidth>
+                Pricing
+              </NavButton>
+              {isAdmin && (
+                <NavButton href="/pricing" isFullWidth colorScheme="red">
+                  Admin
+                </NavButton>
+              )}
+              <Divider />
+              <DarkModeSwitch />
+            </VStack>
+          </DrawerBody>
+        </NavDrawer>
+      )}
+    </NavBarContainer>
+  )
+}
+
+export const NavbarCourses: React.FC = ({ children }) => {
+  const { isLoggedIn } = useAuthState()
+  const isMd = useBreakpointValue({ base: true, lg: false })
+  return (
+    <NavBarContainer>
+      <Brand />
+
+      <Breadcrumb ml={3}>
+        <BreadcrumbItem>
+          <BreadcrumbLink>Courses</BreadcrumbLink>
+        </BreadcrumbItem>
+        <BreadcrumbItem>
+          <BreadcrumbLink>Test Course</BreadcrumbLink>
+        </BreadcrumbItem>
+        <BreadcrumbItem>
+          <BreadcrumbLink>Introduction</BreadcrumbLink>
+        </BreadcrumbItem>
+      </Breadcrumb>
+      <Spacer />
+      <Box flexShrink={0} mr={2}>
+        {!isMd && <DarkModeSwitch mr={2} />}
+        {isLoggedIn ? (
+          <UserMenu />
+        ) : (
+          <SignInButton mr={2} variant="outline" colorScheme="green" />
+        )}
+      </Box>
+      {children && (
+        <NavDrawer size="sm">
+          <DrawerCloseButton />
+          {children}
+        </NavDrawer>
+      )}
+    </NavBarContainer>
   )
 }
