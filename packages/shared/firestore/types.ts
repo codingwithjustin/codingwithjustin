@@ -53,15 +53,16 @@ export interface Video extends BaseContent {
 }
 
 export interface CourseSection {
+  slug: string
   name: string
   description: string
-  content: Array<Video | CourseSection | string>
+  content: Array<Content>
 }
 
 export interface Course extends BaseContent {
   type: 'course'
   vimeoId: string
-  content: CourseSection[]
+  children: CourseSection[]
 }
 
 export type Content = Course | Video

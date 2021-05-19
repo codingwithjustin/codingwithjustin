@@ -7,6 +7,5 @@ export const userUpdate = functions.firestore
   .onUpdate(async change => {
     const before = change.before.data() as User
     const after = change.after.data() as User
-
     await updateUserRoleChange(before, after)
   })
