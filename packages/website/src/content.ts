@@ -8,6 +8,7 @@ import {
 import { Content, Course, CourseSection, Video } from '@shared/firestore'
 import { matchSorter } from 'match-sorter'
 import { formatTimestamp } from './utils'
+import cloneDeep from 'lodash.clonedeep'
 
 let content: Content[] = []
 
@@ -31,25 +32,25 @@ export class ContentFilter {
   }
 
   content: Content[]
+  contentMap: Record<string, Content>
   // Boolean for knowing if the content is already flattened
   isContentFlat: boolean
 
   constructor(content: Content[]) {
     this.content = [...content]
+    this.contentMap = Object.fromEntries(
+      this.content.filter(c => c.id != null).map(c => [c.id, c])
+    )
     this.isContentFlat = false
   }
 
   flatten() {
     if (this.isContentFlat) return this
     this.isContentFlat = true
-    for (const [course, section, content] of this.iterateCourseContent()) {
-      this.content.push({
-        ...content,
-        premium: course.premium,
-        course,
-        section
-      })
-    }
+    const newContent = Array.from(this.iterateCourseContent())
+      .filter(([_, __, c]) => typeof c !== 'string')
+      .map(([course, section, content]) => ({ ...content, course, section }))
+    this.content.push(...newContent)
     return this
   }
 
@@ -64,8 +65,23 @@ export class ContentFilter {
     }
   }
 
+  resolveCourse(c: Course): Course<Content> {
+    const course = cloneDeep(c)
+    course.children = course.children.map(c => {
+      c.content = c.content.map(c =>
+        typeof c == 'string' ? this.findById(c) : c
+      )
+      return c
+    })
+    return course as Course<Content>
+  }
+
   findBySlug(slug: string) {
     return this.content.find(f => f.slug === slug)
+  }
+
+  findById(id: string) {
+    return this.contentMap[id]
   }
 
   search(value: string) {

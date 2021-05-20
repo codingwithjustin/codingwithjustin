@@ -174,7 +174,7 @@ export const ContentPageWhatYoullLearn: React.FC<
   )
 }
 
-export const ContentPageCourseToc: React.FC<{ content: Course }> = ({
+export const ContentPageCourseToc: React.FC<{ content: Course<Content> }> = ({
   content
 }) => {
   return (
@@ -197,7 +197,7 @@ export const ContentPageCourseToc: React.FC<{ content: Course }> = ({
                   key={c.slug}
                 >
                   <Text mx={3} isTruncated>
-                    {c.title}
+                    {c.shortTitle ?? c.title}
                   </Text>
                   <Spacer />
                   {!c.premium && <CourseFreeTag />}

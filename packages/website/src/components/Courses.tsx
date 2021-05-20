@@ -26,8 +26,8 @@ import { TextMuted } from './TextMuted'
 import { formatSeconds } from '@/utils'
 
 interface CourseContent {
-  course: Course
-  section: CourseSection
+  course: Course<Content>
+  section: CourseSection<Content>
   content: Content
 }
 
@@ -144,7 +144,7 @@ export const CourseSidebar: React.FC = () => {
                   isActive={c.slug === content.slug}
                 >
                   <Text mx={3} isTruncated>
-                    {i + 1}.{x + 1} {c.title}
+                    {i + 1}.{x + 1} {c.shortTitle ?? c.title}
                   </Text>
                   <Spacer />
                   {!c.premium && <CourseFreeTag />}

@@ -20,8 +20,8 @@ import { FaAngleLeft, FaAngleRight, FaCheck, FaHome } from 'react-icons/fa'
 import NextLink from 'next/link'
 
 interface ContentChildrenProps {
-  course: Course
-  section: CourseSection
+  course: Course<Content>
+  section: CourseSection<Content>
   content: Content
 }
 
@@ -30,8 +30,8 @@ const ContentTitle: React.FC<HeadingProps> = props => (
 )
 
 const getNext = (
-  course: Course,
-  section: CourseSection,
+  course: Course<Content>,
+  section: CourseSection<Content>,
   content: Content
 ): Content | null => {
   const idx = section.content.findIndex(c => c.slug === content.slug)
@@ -49,8 +49,8 @@ const getNext = (
 }
 
 const getPrevious = (
-  course: Course,
-  section: CourseSection,
+  course: Course<Content>,
+  section: CourseSection<Content>,
   content: Content
 ): Content | null => {
   const idx = section.content.findIndex(c => c.slug === content.slug)
@@ -137,15 +137,18 @@ const ContentChildren: NextPage<ContentChildrenProps> = props => {
 }
 
 export const getStaticPaths: GetStaticPaths = async () => {
-  const content = await ContentFilter.content()
-  const pages = Array.from(content.iterateCourseContent())
+  const allContent = await ContentFilter.content()
+  const pages = Array.from(allContent.iterateCourseContent())
 
   return {
     paths: pages.map(([course, section, content]) => ({
       params: {
         slug: course.slug,
         section: section.slug,
-        subSlug: content.slug
+        subSlug: (typeof content == 'string'
+          ? allContent.findById(content)
+          : content
+        ).slug
       }
     })),
     fallback: false
@@ -159,10 +162,11 @@ export const getStaticProps: GetStaticProps<
   const { slug, section: sectionSlug, subSlug } = params ?? {}
 
   const allContent = await ContentFilter.content()
-  const course = allContent.get().find(c => c.slug === slug)
-  if (course == null || !isCourse(course))
+  const courseContent = allContent.get().find(c => c.slug === slug)
+  if (courseContent == null || !isCourse(courseContent))
     throw new Error(`Content is not a course (${params}).`)
 
+  const course = allContent.resolveCourse(courseContent)
   const section = course?.children.find(s => s.slug === sectionSlug)
   const content = section?.content.find(c => c.slug === subSlug)
   if (course == null || section == null || content == null)

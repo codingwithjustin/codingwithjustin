@@ -17,8 +17,8 @@ import {
 } from '@chakra-ui/react'
 import React, { useEffect, useState } from 'react'
 import { GetStaticPaths, GetStaticProps, NextPage } from 'next'
-import { ContentFilter } from '@/content'
-import { Content } from '@shared/firestore'
+import { ContentFilter, isCourse } from '@/content'
+import { Content, Course } from '@shared/firestore'
 import { serialize } from 'next-mdx-remote/serialize'
 import { MDXRemote, MDXRemoteSerializeResult } from 'next-mdx-remote'
 
@@ -175,7 +175,7 @@ const ContentPage: NextPage<ContentPageProps> = props => {
             )}
 
             {content.type === 'course' && (
-              <ContentPageCourseToc content={content} />
+              <ContentPageCourseToc content={content as Course<Content>} />
             )}
 
             <Box as="section" my={12}>
@@ -221,9 +221,11 @@ export const getStaticProps: GetStaticProps<
   { slug: string }
 > = async ({ params }) => {
   const all = await ContentFilter.content()
-  const content = all.findBySlug(params?.slug ?? '')
+  let content = all.findBySlug(params?.slug ?? '')
+
   if (!content)
     throw new Error(`Could not find content with slug ${params?.slug}`)
+  if (isCourse(content)) content = all.resolveCourse(content)
 
   const { body } = content
   const mdx = await serialize(body)
