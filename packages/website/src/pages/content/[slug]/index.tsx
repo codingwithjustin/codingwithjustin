@@ -139,7 +139,7 @@ const TableOfContents: React.FC<TableOfContentsProps> = props => {
 interface ContentPageProps {
   content: Content
   mdx: MDXRemoteSerializeResult
-  preview: MDXRemoteSerializeResult
+  preview?: MDXRemoteSerializeResult
   headings: any[]
 }
 
@@ -230,8 +230,8 @@ export const getStaticProps: GetStaticProps<
   const { body } = content
   const mdx = await serialize(body)
 
-  const lines = body.split('\n').slice(0, 5).join('\n')
-  const preview = await serialize(lines)
+  // const lines = body.split('\n').slice(0, 5).join('\n')
+  // const preview = await serialize(lines)
 
   const structure: any = remark()
   const headings = structure
@@ -240,7 +240,7 @@ export const getStaticProps: GetStaticProps<
     .children.filter((f: any) => f.type === 'heading' && f.depth < 3)
     .map((h: any) => ({ ...h, ...(h.children?.[0] ?? {}) }))
 
-  return { props: { content, mdx, preview, headings } }
+  return { props: { content, mdx, headings } }
 }
 
 export default ContentPage

@@ -18,7 +18,10 @@ export const get = async () => {
     const result = await getDocs<Content>(
       query(col, orderBy('publishedAt', 'desc'))
     )
-    content = result.docs.map(d => ({ ...d.data(), id: d.id }))
+
+    if (process.env.NODE_ENV === 'production')
+      content = result.docs.map(d => ({ ...d.data(), id: d.id }))
+    else return result.docs.map(d => ({ ...d.data(), id: d.id }))
   }
   return content
 }

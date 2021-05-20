@@ -81,6 +81,7 @@ export const ContentPageCard: React.FC<{
 }> = ({ content, descriptionHeader }) => {
   const { type, premium } = content
   const { hasAccess } = useUserData()
+  const thumbnail = contentThumbnail(content)
   return (
     <Card>
       <Box position="relative">
@@ -93,7 +94,7 @@ export const ContentPageCard: React.FC<{
                 <YouTubeVideo id={content.youtubeId} />
               )}
 
-            {content.thumbnail == null && content.type == 'video' && (
+            {thumbnail == null && content.type == 'video' && (
               <AspectRatio ratio={16 / 9}>
                 <ContentFakeThumbnail
                   roundedTopLeft="md"
