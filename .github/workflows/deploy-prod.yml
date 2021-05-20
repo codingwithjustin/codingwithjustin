@@ -4,6 +4,9 @@
 name: Deploy Website
 
 on:
+  schedule:
+    # Twice a day
+    - cron: '0 */12 * * *'
   push:
     branches:
       - main
