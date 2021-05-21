@@ -37,9 +37,8 @@ export const formatSeconds = (secNum: number) => {
   return time.startsWith('0') ? time.substring(1) : time
 }
 
-export const anchorize = (text: string) => {
-  return text
+export const anchorize = (text: string) =>
+  text
     .toLowerCase()
     .replace(/[^a-z0-9 ]/g, '')
     .replace(/[ ]/g, '-')
-}

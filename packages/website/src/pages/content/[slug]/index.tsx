@@ -14,7 +14,8 @@ import {
   BoxProps,
   HeadingProps,
   Tag,
-  Link
+  Link,
+  useBreakpointValue
 } from '@chakra-ui/react'
 import React, { useEffect, useState } from 'react'
 import { GetStaticPaths, GetStaticProps, NextPage } from 'next'
@@ -96,7 +97,7 @@ interface TableOfContentsProps extends BoxProps {
 
 const TableOfContents: React.FC<TableOfContentsProps> = props => {
   const { headings, content, ...boxProps } = props
-  const tocColor = useColorModeValue('blue.700', 'blue.200')
+  const tocColor = useColorModeValue('blue.400', 'blue.200')
   const tocColorSecondary = useColorModeValue('gray.600', 'gray.200')
 
   return (
@@ -144,7 +145,6 @@ const TableOfContents: React.FC<TableOfContentsProps> = props => {
 interface ContentPageProps {
   content: Content
   mdx: MDXRemoteSerializeResult
-  preview?: MDXRemoteSerializeResult
   headings: any[]
 }
 
@@ -157,6 +157,7 @@ const ContentPage: NextPage<ContentPageProps> = props => {
   const { title, description } = content
   const { isAdmin } = useAuthState()
   const { hasMembership } = useUserData()
+  const isMd = useBreakpointValue({ base: false, lg: true })
   return (
     <>
       <NextSeo
@@ -164,7 +165,7 @@ const ContentPage: NextPage<ContentPageProps> = props => {
         description={description}
         openGraph={{ title, description }}
       />
-      <LayoutContainer maxW="6xl">
+      <LayoutContainer maxW="7xl">
         {content.draft && (
           <Tag colorScheme="purple" size="lg">
             DRAFT
@@ -174,6 +175,16 @@ const ContentPage: NextPage<ContentPageProps> = props => {
         <Flex>
           <Box flexGrow={1}>
             <ContentPageCard content={content} />
+
+            {!isMd && (
+              <TableOfContents
+                my={10}
+                boxShadow="none"
+                bgColor="inherit"
+                content={content}
+                headings={headings}
+              />
+            )}
 
             {'learn' in content && (
               <ContentPageWhatYoullLearn learn={content.learn} />
@@ -190,12 +201,14 @@ const ContentPage: NextPage<ContentPageProps> = props => {
             {!hasMembership && <ProBanner />}
           </Box>
 
-          <Box w={350} flexShrink={0} ml={6}>
-            <Box position="sticky" top={5}>
-              <TableOfContents content={content} headings={headings} />
-              {isAdmin && content.id && <EditBody contentId={content.id} />}
+          {isMd && (
+            <Box w={350} flexShrink={0} ml={6}>
+              <Box position="sticky" top={5}>
+                <TableOfContents content={content} headings={headings} />
+                {isAdmin && content.id && <EditBody contentId={content.id} />}
+              </Box>
             </Box>
-          </Box>
+          )}
         </Flex>
       </LayoutContainer>
     </>
@@ -234,9 +247,6 @@ export const getStaticProps: GetStaticProps<
 
   const { body } = content
   const mdx = await serialize(body)
-
-  // const lines = body.split('\n').slice(0, 5).join('\n')
-  // const preview = await serialize(lines)
 
   const structure: any = remark()
   const headings = structure

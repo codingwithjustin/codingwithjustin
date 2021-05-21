@@ -16,7 +16,8 @@ import {
   SimpleGrid,
   AccordionItem,
   AccordionPanel,
-  Spacer
+  Spacer,
+  useBreakpointValue
 } from '@chakra-ui/react'
 import { Content, Course } from '@shared/firestore'
 import React from 'react'
@@ -82,6 +83,7 @@ export const ContentPageCard: React.FC<{
   const { type, premium } = content
   const { hasAccess } = useUserData()
   const thumbnail = contentThumbnail(content)
+  const isSm = useBreakpointValue({ base: false, sm: true })
   return (
     <Card>
       <Box position="relative">
@@ -109,9 +111,7 @@ export const ContentPageCard: React.FC<{
 
       <Box p={5}>
         {descriptionHeader}
-        <Text fontSize="lg" noOfLines={4}>
-          {content.description}
-        </Text>
+        <Text fontSize="lg">{content.description}</Text>
 
         <Box my={5}>
           {content.tags.map(t => (
@@ -120,26 +120,30 @@ export const ContentPageCard: React.FC<{
         </Box>
 
         <Flex pt={2}>
-          <Image
-            flexShrink={0}
-            rounded="full"
-            mr={5}
-            src={
-              'https://yt3.ggpht.com/ytc/AAUvwnjRLyTU3teRL40o0yGEKAIp7fdv3H83gSv6r8zVYw=s48-c-k-c0x00ffffff-no-rj'
-            }
-          />
+          <Box flexShrink={0}>
+            <Image
+              rounded="full"
+              mr={5}
+              src={
+                'https://yt3.ggpht.com/ytc/AAUvwnjRLyTU3teRL40o0yGEKAIp7fdv3H83gSv6r8zVYw=s48-c-k-c0x00ffffff-no-rj'
+              }
+            />
+          </Box>
           <Box flexGrow={1}>
             <Text fontSize="lg" fontWeight="bold" letterSpacing="wide">
               Justin Brooks
             </Text>
             <Text>{formatPublishedAt(content)}</Text>
           </Box>
-          <Box>
-            <GitHubPersonalButton size="lg" />
-            <YoutubeButton size="lg" />
-            <DiscordButton size="lg" />
-            <TwitterButton size="lg" />
-          </Box>
+
+          {isSm && (
+            <Box>
+              <GitHubPersonalButton size="lg" />
+              <YoutubeButton size="lg" />
+              <DiscordButton size="lg" />
+              <TwitterButton size="lg" />
+            </Box>
+          )}
         </Flex>
       </Box>
     </Card>

@@ -127,6 +127,7 @@ export const NavBar: React.FC<FlexProps> = props => {
   const { isLoggedIn, isAdmin } = useAuthState()
 
   const isSmall = useBreakpointValue({ base: true, md: false })
+  const isBase = useBreakpointValue({ base: true, sm: false })
   const isMd = useBreakpointValue({ base: true, lg: false })
   return (
     <NavBarContainer {...props}>
@@ -146,9 +147,11 @@ export const NavBar: React.FC<FlexProps> = props => {
       )}
 
       <Spacer />
-      <Box w={{ base: undefined, lg: '20rem' }} mr={5}>
-        <SearchInput />
-      </Box>
+      {!isBase && (
+        <Box w={{ base: undefined, lg: '20rem' }} mr={5}>
+          <SearchInput />
+        </Box>
+      )}
       <Box flexShrink={0} mr={2}>
         {!isMd && <DarkModeSwitch mr={2} />}
         {isLoggedIn ? (
@@ -164,6 +167,7 @@ export const NavBar: React.FC<FlexProps> = props => {
 
           <DrawerBody>
             <VStack textAlign="left">
+              {isBase && <SearchInput />}
               <NavButton href="/" isFullWidth>
                 Home
               </NavButton>
