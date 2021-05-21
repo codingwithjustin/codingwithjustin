@@ -50,7 +50,6 @@ const Videos: NextPage<{
                 {membershipContent.map(s => (
                   <VContentCard
                     key={s.title}
-                    w={250}
                     flexShrink={0}
                     marginX={2}
                     content={s}

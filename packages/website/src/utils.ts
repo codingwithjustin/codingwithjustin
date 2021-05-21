@@ -29,9 +29,17 @@ export const formatSeconds = (secNum: number) => {
   const minutes = Math.floor(secNum / 60) % 60
   const seconds = secNum % 60
 
-  return [hours, minutes, seconds]
+  const time = [hours, minutes, seconds]
     .map(v => (v < 10 ? '0' + v : v))
     .filter((v, i) => v !== '00' || i > 0)
     .join(':')
-    .replace(/^0+|0+$/g, '')
+
+  return time.startsWith('0') ? time.substring(1) : time
+}
+
+export const anchorize = (text: string) => {
+  return text
+    .toLowerCase()
+    .replace(/[^a-z0-9 ]/g, '')
+    .replace(/[ ]/g, '-')
 }

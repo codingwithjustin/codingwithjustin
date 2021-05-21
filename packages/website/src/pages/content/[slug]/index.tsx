@@ -13,7 +13,8 @@ import {
   useColorModeValue,
   BoxProps,
   HeadingProps,
-  Tag
+  Tag,
+  Link
 } from '@chakra-ui/react'
 import React, { useEffect, useState } from 'react'
 import { GetStaticPaths, GetStaticProps, NextPage } from 'next'
@@ -36,6 +37,7 @@ import {
   ContentPageCourseToc,
   ContentPageWhatYoullLearn
 } from '@/components/content/ContentPage'
+import { anchorize } from '@/utils'
 
 const ProBanner: React.FC = () => {
   return (
@@ -116,7 +118,10 @@ const TableOfContents: React.FC<TableOfContentsProps> = props => {
       </Text>
 
       {headings.map((h: any, i) => (
-        <Text
+        <Link
+          as="a"
+          display="block"
+          href={`#${anchorize(h.value)}`}
           key={i}
           {...(h.depth == 1
             ? {
@@ -130,7 +135,7 @@ const TableOfContents: React.FC<TableOfContentsProps> = props => {
               })}
         >
           {h.value}
-        </Text>
+        </Link>
       ))}
     </Box>
   )
