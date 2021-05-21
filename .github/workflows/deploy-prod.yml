@@ -20,7 +20,7 @@ jobs:
       - name: Deploy to Firebase
         uses: w9jds/firebase-action@master
         with:
-          args: deploy
+          args: deploy --project prod
         env:
           FIREBASE_TOKEN: '${{ secrets.FIREBASE_TOKEN }}'
           NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: '${{ secrets.STRIPE_PUBLISHABLE_KEY }}'
