@@ -24,4 +24,5 @@ jobs:
           args: deploy
         env:
           FIREBASE_TOKEN: '${{ secrets.FIREBASE_TOKEN }}'
-          NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: '${{secrets.STRIPE_PUBLISHABLE_KEY }}'
+          NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: '${{ secrets.STRIPE_PUBLISHABLE_KEY }}'
+          NEXT_PUBLIC_STRIPE_MEMBERSHIP_PRODUCT: '${{ secrets.STRIPE_MEMBERSHIP_PRODUCT }}'
