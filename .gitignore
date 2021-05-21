@@ -35,3 +35,6 @@ yarn-error.log*
 .vercel
 .firebase
 .runtimeconfig.json
+
+**/public/workbox**
+**/public/sw**
