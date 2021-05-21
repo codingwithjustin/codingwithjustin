@@ -5,7 +5,8 @@ import { Elements } from '@stripe/react-stripe-js'
 import { Price, getProductPrices } from '@/firebase/functions'
 
 const STRIPE_KEY = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
-const STRIPE_MEMBERSHIP_PRODUCT_ID = 'prod_JUEdNpS41zRTQO'
+const STRIPE_MEMBERSHIP_PRODUCT_ID =
+  process.env.NEXT_PUBLIC_STRIPE_MEMBERSHIP_PRODUCT
 
 let stripePromise: Promise<Stripe | null>
 
@@ -29,6 +30,7 @@ export const formatPrice = (price?: Price) => {
 }
 
 export const getMembershipPrices = async () => {
+  if (STRIPE_MEMBERSHIP_PRODUCT_ID == null) return []
   const result = await getProductPrices({
     product: STRIPE_MEMBERSHIP_PRODUCT_ID
   })

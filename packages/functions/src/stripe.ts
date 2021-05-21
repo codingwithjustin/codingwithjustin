@@ -6,9 +6,9 @@ import * as Firestore from './firestore'
 
 const config = functions.config()
 
-export const stripeSecret = config.stripe.test.secret
-export const stripeMembershipProductId = config.stripe.test.membership.product
-export const stripeWebhookSecret = config.stripe.test.webhook
+export const stripeSecret = config.stripe.secret
+export const stripeMembershipProductId = config.stripe.membership.product
+export const stripeWebhookSecret = config.stripe.webhook
 
 export const stripe = new Stripe(stripeSecret, { apiVersion: '2020-08-27' })
 

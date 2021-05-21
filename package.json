@@ -12,7 +12,9 @@
     "build:web": "yarn workspace @cwj/web build",
     "build:funcs": "yarn workspace @cwj/functions build",
     "lint": "eslint --ext .tsx,.ts,.jsx,.js . --fix",
-    "deploy": "firebase deploy"
+    "deploy": "firebase deploy",
+    "firebase:dev": "firebase use default",
+    "firebase:prod": "firebase use prod"
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^4.24.0",

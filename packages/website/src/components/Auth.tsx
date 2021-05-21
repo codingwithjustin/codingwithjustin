@@ -104,7 +104,7 @@ export const LoginModal: React.FC<LoginModalProps> = props => {
           <VStack>
             <GoogleAuthButton />
             <GithubAuthButton />
-            <AppleAuthButton />
+            {/* <AppleAuthButton /> */}
           </VStack>
           <TextMuted mt={10} fontSize="sm">
             By signing in you agree to our Terms of Service and Privacy Policy.

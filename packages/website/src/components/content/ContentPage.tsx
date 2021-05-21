@@ -150,12 +150,14 @@ export const ContentPageCard: React.FC<{
   )
 }
 
+export const WHAT_YOULL_LEARN_HEADER_ID = 'what-youll-learn'
+
 export const ContentPageWhatYoullLearn: React.FC<
   BoxProps & { learn: string[] }
 > = ({ learn, ...props }) => {
   return (
     <Box as="section" my={12} {...props}>
-      <Heading as="h2" mb={5}>
+      <Heading as="h2" id={WHAT_YOULL_LEARN_HEADER_ID} mb={5}>
         What you&lsquo;ll learn
       </Heading>
 
