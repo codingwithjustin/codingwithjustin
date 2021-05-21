@@ -9,7 +9,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - run: yarn install
-      - run: firebase use prod
+      - run: yarn run firebase use prod
       - run: yarn build
       - uses: FirebaseExtended/action-hosting-deploy@v0
         with:
