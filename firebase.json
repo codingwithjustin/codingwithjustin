@@ -11,6 +11,7 @@
   "hosting": {
     "predeploy": ["yarn build:web"],
     "public": "packages/website/out",
+    "cleanUrls": true,
     "ignore": ["firebase.json", "**/.*", "**/node_modules/**"]
   }
 }
