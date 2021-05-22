@@ -12,9 +12,20 @@ import { DefaultSeo } from 'next-seo'
 import { CodeGroupProvider } from '@/components/mdx/CodeGroup'
 
 const App = ({ Component, pageProps }: AppProps) => {
+  if (process.browser) {
+    const { hostname, pathname } = window.location
+    if (
+      hostname == 'coding-with-justin.web.app' ||
+      hostname == 'coding-with-justin.firebaseapp.com'
+    ) {
+      window.location.href = `https://codingwithjustin.com${pathname}`
+    }
+  }
+
   return (
     <>
       <Head>
+        <link rel="canonical" href="https://codingwithjustin.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" />
         <link
           href="https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;600;700;800;900&display=swap"
