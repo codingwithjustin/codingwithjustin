@@ -53,21 +53,25 @@ export const GoogleAuthButton: React.FC<ButtonProps> = props => {
   )
 }
 
-export const GithubAuthButton: React.FC<ButtonProps> = props => (
-  <Button
-    bgColor={useColorModeValue('gray.700', 'whiteAlpha.100')}
-    _hover={{
-      bgColor: useColorModeValue('gray.800', 'whiteAlpha.300')
-    }}
-    color="white"
-    leftIcon={<FaGithub />}
-    size="lg"
-    isFullWidth
-    {...props}
-  >
-    Github
-  </Button>
-)
+export const GithubAuthButton: React.FC<ButtonProps> = props => {
+  const { github } = useSignIn()
+  return (
+    <Button
+      bgColor={useColorModeValue('gray.700', 'whiteAlpha.100')}
+      _hover={{
+        bgColor: useColorModeValue('gray.800', 'whiteAlpha.300')
+      }}
+      color="white"
+      leftIcon={<FaGithub />}
+      size="lg"
+      isFullWidth
+      {...props}
+      onClick={() => github()}
+    >
+      Github
+    </Button>
+  )
+}
 
 export const AppleAuthButton: React.FC<ButtonProps> = props => (
   <Button
