@@ -43,7 +43,7 @@ export const verifyRequest = (request: functions.Request) => {
 }
 
 export const getProductPrices = (product: string) => {
-  return stripe.prices.list({ product })
+  return stripe.prices.list({ product, limit: 100 })
 }
 
 export const getSubscription = (subId: string) => {
