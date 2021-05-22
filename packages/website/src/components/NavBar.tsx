@@ -35,7 +35,7 @@ import {
 import NextLink from 'next/link'
 import React from 'react'
 import { FaBars } from 'react-icons/fa'
-import { useAuthState } from '../firebase'
+import { useAuthState, useUserData } from '../firebase'
 import { SignInButton } from './Auth'
 import { useCourseContent } from './Courses'
 import { DarkModeSwitch } from './DarkModeSwitch'
@@ -125,6 +125,7 @@ const Brand: React.FC = () => {
 
 export const NavBar: React.FC<FlexProps> = props => {
   const { isLoggedIn, isAdmin } = useAuthState()
+  const { hasMembership } = useUserData()
 
   const isSmall = useBreakpointValue({ base: true, md: false })
   const isBase = useBreakpointValue({ base: true, sm: false })
@@ -137,7 +138,11 @@ export const NavBar: React.FC<FlexProps> = props => {
         <Box>
           <NavButton href="/videos">Videos</NavButton>
           <NavButton href="/courses">Courses</NavButton>
-          <NavButton href="/pricing">Pricing</NavButton>
+          {hasMembership ? (
+            <NavButton href="/settings">Settings</NavButton>
+          ) : (
+            <NavButton href="/pricing">Pricing</NavButton>
+          )}
           {isAdmin && (
             <NavButton href="/admin" colorScheme="red">
               Admin
@@ -177,9 +182,13 @@ export const NavBar: React.FC<FlexProps> = props => {
               <NavButton href="/courses" isFullWidth>
                 Courses
               </NavButton>
-              <NavButton href="/pricing" isFullWidth>
-                Pricing
-              </NavButton>
+              {hasMembership ? (
+                <NavButton href="/settings">Settings</NavButton>
+              ) : (
+                <NavButton href="/pricing" isFullWidth>
+                  Pricing
+                </NavButton>
+              )}
               {isAdmin && (
                 <NavButton href="/pricing" isFullWidth colorScheme="red">
                   Admin

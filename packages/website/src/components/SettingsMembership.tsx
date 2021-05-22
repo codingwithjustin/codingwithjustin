@@ -77,7 +77,7 @@ const SubscriptionInfo: React.FC<{ subscription: SubscriptionResponse }> = ({
   return (
     <>
       <Text>
-        You account has a {subscription.plan.interval}ly subscription.
+        Your account has a {subscription.plan.interval}ly subscription.
       </Text>
 
       <SimpleGrid columns={3} my={5}>
