@@ -36,6 +36,7 @@ import { GetStaticProps, NextPage } from 'next'
 import { TextMuted } from '../components/TextMuted'
 import {
   DiscordButton,
+  DISCORD_INVITE,
   GitHubButton,
   GitHubPersonalButton,
   LinkedinPersonalButton,
@@ -234,8 +235,10 @@ const Index: NextPage<ContentTabsProps> = props => {
           </Box>
           <Spacer />
           <Button
+            as="a"
             flexShrink={0}
             size="lg"
+            onClick={() => window.open(DISCORD_INVITE)}
             color={useColorModeValue('black', 'white')}
             py={7}
             fontWeight="extrabold"
