@@ -3,14 +3,7 @@ import { VContentCard } from '@/components/content/ContentCard'
 import { LayoutContainer } from '@/components/Layout'
 import { TextMuted } from '@/components/TextMuted'
 import { ContentFilter, isCourse } from '@/content'
-import {
-  Button,
-  Center,
-  Heading,
-  Input,
-  SimpleGrid,
-  VStack
-} from '@chakra-ui/react'
+import { Heading, SimpleGrid } from '@chakra-ui/react'
 import { Course } from '@shared/firestore'
 import { GetStaticProps, NextPage } from 'next'
 import { NextSeo } from 'next-seo'
@@ -51,7 +44,7 @@ const Courses: NextPage<CourseProps> = ({ courses }) => {
           ))}
         </SimpleGrid>
 
-        <Card my={28} p={10}>
+        {/* <Card my={28} p={10}>
           <Center py={10}>
             <VStack maxW={450} textAlign="center" spacing={5}>
               <Heading>Get updates for new courses!</Heading>
@@ -61,7 +54,7 @@ const Courses: NextPage<CourseProps> = ({ courses }) => {
               </Button>
             </VStack>
           </Center>
-        </Card>
+        </Card> */}
       </LayoutContainer>
     </>
   )
