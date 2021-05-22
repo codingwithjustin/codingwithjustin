@@ -44,7 +44,7 @@ export const useCheckout = () => {
   return { ...ctx, currencies }
 }
 
-export const useCheckoutMembership = (cur: string) => {
+export const useCheckoutMembership = (cur?: string) => {
   const { prices, currency: selectedCurrency, term } = useCheckout()
   const currency = cur ?? selectedCurrency
   const monthly = prices.find(
