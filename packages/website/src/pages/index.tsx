@@ -321,7 +321,7 @@ const Index: NextPage<ContentTabsProps> = props => {
             <Image
               rounded="full"
               alt="Justin Brooks"
-              src="/headshot.png"
+              src="/headshot.jpg"
               w={{ base: 250, sm: 300, md: 450 }}
             />
             <Center mt={2}>
